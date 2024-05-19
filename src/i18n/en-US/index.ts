@@ -3,5 +3,6 @@
 
 export default {
   failed: 'Action failed',
-  success: 'Action was successful'
+  success: 'Action was successful',
+  FORGOT_PASS: 'Esqueci a senha',
 };
