@@ -45,11 +45,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-// import { useQuasar } from 'quasar';
+import { useQuasar } from 'quasar';
 // import { useI18n } from 'vue-i18n';
-import { isRequired, isEmail } from 'src/utils/helpers'
-
-// const $q = useQuasar();
+import { notify, isRequired, isEmail } from 'src/utils/helpers'
+const $q = useQuasar();
 
 const form = ref({
   name: '',

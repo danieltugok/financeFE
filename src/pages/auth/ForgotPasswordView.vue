@@ -32,23 +32,22 @@ import {
 } from 'src/utils/helpers'
 import { Vue3Lottie } from 'vue3-lottie'
 
-import AstronautJSON from 'src/assets/astronaut.json'
-// import { userComposable } from '@/composables/userComposable'
+import AstronautJSON from 'src/assets/lottie/astronaut.json'
+import { userComposable } from 'src/composables/userComposable'
 
-// const { forgotPass } = userComposable()
+const { forgotPass } = userComposable()
 
 const email = ref<string>('')
 async function onSubmit() {
-  // const forgotPassResponse = await forgotPass(email.value);
-  // if (forgotPassResponse.status === 200)
-  notify('info', 'email Sent', 'Check your email to reset password');
-  // else if (forgotPassResponse.statusCode === 409) 
-  //   notify('negative', forgotPassResponse.error, 'This email was NOT found in our database');
+  const forgotPassResponse = await forgotPass(email.value);
+  if (forgotPassResponse.status === 200)
+    notify('info', 'email Sent', 'Check your email to reset password');
+  else if (forgotPassResponse.statusCode === 409)
+    notify('negative', forgotPassResponse.error, 'This email was NOT found in our database');
 
-
-  // else if (forgotPassResponse.status === 404) {    
-  //   notify('negative', 'ERROR', 'Email could NOT be sent. Check if this email exists');
-  // }
+  else if (forgotPassResponse.status === 404) {
+    notify('negative', 'ERROR', 'Email could NOT be sent. Check if this email exists');
+  }
 }
 </script>
 <style scoped lang="sass">

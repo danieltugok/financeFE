@@ -5,21 +5,17 @@ import {
   //   getUsersService,
   getLoginService,
   getProfileService,
-  //   forgotPassService,
+  forgotPassService,
   //   updateUserService,
   //   getUserImageProfileService,
   //   resetPassService,
-  //   getUserMenuService,
+  getUserMenuService,
   //   updateUserProfileImageService,
 } from 'src/services/userServices';
 
 export const userComposable = () => {
   const $q = useQuasar();
-  const {
-    setUser,
-    // setUserMenu,
-    setTokens,
-  } = UserStore();
+  const { setUser, setUserMenu, setTokens } = UserStore();
   const { user, accessToken, refreshToken, userMenu } = storeToRefs(
     UserStore()
   );
@@ -100,8 +96,8 @@ export const userComposable = () => {
   async function forgotPass(email: string): Promise<any> {
     $q.loading.show();
     try {
-      // const { status } = await forgotPassService(email);
-      // return { status };
+      const { status } = await forgotPassService(email);
+      return { status };
     } catch (error: any) {
       console.log(error);
       return error.response.data;
@@ -140,10 +136,10 @@ export const userComposable = () => {
   async function getUserMenu(): Promise<void> {
     $q.loading.show();
     try {
-      // const { status, data } = await getUserMenuService();
-      // if (status === 200) {
-      //   setUserMenu(data);
-      // }
+      const { status, data } = await getUserMenuService();
+      if (status === 200) {
+        setUserMenu(data);
+      }
     } catch (error) {
       console.log('ERROR: ', error);
     } finally {

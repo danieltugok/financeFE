@@ -56,7 +56,7 @@ const routes: RouteRecordRaw[] = [
         path: '404',
         name: '404',
         component: () =>
-          import(/* webpackChunkName: "404" */ 'pages/404View.vue'),
+          import(/* webpackChunkName: "404" */ 'pages/ErrorNotFound.vue'),
         meta: {
           requiresAuth: false,
         },
