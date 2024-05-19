@@ -6,7 +6,7 @@ import {
   getLoginService,
   getProfileService,
   forgotPassService,
-  //   updateUserService,
+  updateUserService,
   //   getUserImageProfileService,
   //   resetPassService,
   getUserMenuService,
@@ -69,8 +69,8 @@ export const userComposable = () => {
   async function updateUser(userID: string, userUpated: any): Promise<any> {
     $q.loading.show();
     try {
-      // const { status } = await updateUserService(userID, userUpated);
-      // return { status };
+      const { status } = await updateUserService(userID, userUpated);
+      return { status };
     } catch (error: any) {
       console.log(error);
       return error.response.data;
