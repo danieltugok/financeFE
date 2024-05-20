@@ -64,27 +64,18 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () =>
-      import(/* webpackChunkName: "main" */ 'pages/AboutView.vue'),
-    meta: {
-      requiresAuth: false,
-    },
-  },
-  {
-    path: '/info',
-    name: 'Info',
-    component: () =>
-      import(/* webpackChunkName: "main" */ 'pages/AboutView.vue'),
-    meta: {
-      requiresAuth: false,
-    },
-  },
-  {
     path: '',
     component: DefaultLayout,
     children: [
+      {
+        path: '/about',
+        name: 'About',
+        component: () =>
+          import(/* webpackChunkName: "main" */ 'pages/AboutView.vue'),
+        meta: {
+          requiresAuth: false,
+        },
+      },
       {
         path: 'signin',
         name: 'SignIn',

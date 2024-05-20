@@ -10,6 +10,7 @@
 
 const { configure } = require('quasar/wrappers');
 const path = require('path');
+// const { default: apexchart } = require('src/boot/apexchart');
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -19,7 +20,7 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n', 'axios', 'Vue3Lottie'],
+    boot: ['i18n', 'axios', 'Vue3Lottie', 'apexchart'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],
