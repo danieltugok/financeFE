@@ -1,21 +1,6 @@
 import { RouteRecordRaw } from 'vue-router';
 import DefaultLayout from 'src/layouts/DefaultLayout.vue';
 
-// const routes: RouteRecordRaw[] = [
-//   {
-//     path: '/',
-//     component: () => import('layouts/MainLayout.vue'),
-//     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
-//   },
-
-//   // Always leave this as last one,
-//   // but you can also remove it
-//   {
-//     path: '/:catchAll(.*)*',
-//     component: () => import('pages/ErrorNotFound.vue'),
-//   },
-// ];
-
 const routes: RouteRecordRaw[] = [
   {
     path: '',
@@ -26,7 +11,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '/:pathMatch(.*)*',
-        name: 'NotFound',
+        name: 'ErrorNotFound',
         redirect: '404',
       },
       {
@@ -39,6 +24,24 @@ const routes: RouteRecordRaw[] = [
         name: 'Dashboard',
         component: () =>
           import(/* webpackChunkName: "main" */ 'pages/DashboardView.vue'),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: 'balance',
+        name: 'Balance',
+        component: () =>
+          import(/* webpackChunkName: "main" */ 'pages/BalanceView.vue'),
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: 'categories',
+        name: 'Categories',
+        component: () =>
+          import(/* webpackChunkName: "main" */ 'pages/CategoriesView.vue'),
         meta: {
           requiresAuth: true,
         },
@@ -117,6 +120,10 @@ const routes: RouteRecordRaw[] = [
         },
       },
     ],
+  },
+  {
+    path: '/:catchAll(.*)*',
+    component: () => import('pages/ErrorNotFound.vue'),
   },
 ];
 

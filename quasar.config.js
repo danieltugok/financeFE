@@ -23,7 +23,7 @@ module.exports = configure(function (/* ctx */) {
     boot: ['i18n', 'axios', 'Vue3Lottie', 'apexchart'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
-    css: ['app.scss'],
+    css: ['app.scss', 'quasar-custom.sass'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -118,7 +118,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Loading', 'Notify'],
+      plugins: ['Loading', 'Notify', 'AppFullscreen'],
     },
 
     // animations: 'all', // --- includes all animations

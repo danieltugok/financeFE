@@ -7,7 +7,7 @@
 </template>
 <script setup lang="ts">
 import 'gridstack/dist/gridstack.min.css'
-import '@/css/gridstack-custom.sass'
+import 'src/css/gridstack-custom.sass'
 import { onMounted, ref, computed, watch } from 'vue'
 import { GridStack } from 'gridstack'
 import type { GridStackOptions, GridStackNode, GridStackWidget } from 'gridstack'

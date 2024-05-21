@@ -7,7 +7,6 @@ export default async (to: any, from: any, next: any) => {
   if (to.meta.requiresAuth) {
     console.log('to.meta.requiresAuth: ', to.meta.requiresAuth);
     const access_token = localStorage.getItem('access_token');
-    console.log('🚀 ~ access_token:', access_token);
     if (access_token) {
       try {
         await getProfile();

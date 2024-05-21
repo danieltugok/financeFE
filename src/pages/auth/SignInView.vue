@@ -75,7 +75,6 @@ async function onSubmit() {
 }
 
 const VITE_VUE_ROUTER_MODE = import.meta.env.VITE_VUE_ROUTER_MODE
-console.log('🚀 ~ VUE_ROUTER_MODE:', VITE_VUE_ROUTER_MODE)
 
 </script>
 

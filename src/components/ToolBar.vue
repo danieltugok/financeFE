@@ -64,7 +64,8 @@ const updateProfile = (val: any) => {
 </script>
 
 <template>
-  <q-btn icon="person" :color="$q.dark.isActive ? 'light' : 'primary'" flat round>
+  <q-btn icon="person" :color="$q.dark.isActive ? 'light' : 'primary'"
+    :class="$q.dark.isActive ? 'bg-grey-10' : 'bg-grey-1'" flat round>
     <q-menu>
       <q-list class="tw-min-w-[100px] tw-mt-8">
         <!-- <img src="https://cdn.quasar.dev/img/mountains.jpg" class="tw-max-w-[200px]"> -->
