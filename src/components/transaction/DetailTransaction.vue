@@ -4,7 +4,7 @@
             <q-toolbar-title class="text-body1">
                 Detalhes
             </q-toolbar-title>
-            <q-btn flat round dense icon="sym_r_close" to="/transactions" />
+            <q-btn flat round dense icon="sym_r_close" to="/balance" />
         </q-toolbar>
         <q-separator />
         <q-card-section class="q-pt-none">
@@ -123,9 +123,9 @@ const props = defineProps({
         default: ''
     },
 })
-if (props.id) getTransactionById(+props.id)
+// if (props.id) getTransactionById(+props.id)
 
-onUnmounted(() => {
-    setTransaction({})
-})	
+// onUnmounted(() => {
+//     setTransaction({})
+// })	
 </script>

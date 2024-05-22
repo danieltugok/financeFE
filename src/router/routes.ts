@@ -32,10 +32,22 @@ const routes: RouteRecordRaw[] = [
         path: 'balance',
         name: 'Balance',
         component: () =>
-          import(/* webpackChunkName: "main" */ 'pages/BalanceView.vue'),
+          // import(/* webpackChunkName: "main" */ 'pages/BalanceView.vue'),
+          import(/* webpackChunkName: "main" */ 'pages/TransactionView.vue'),
         meta: {
           requiresAuth: true,
         },
+        children: [
+          {
+            path: ':id/',
+            name: 'TransactionDetail',
+            component: () =>
+              import(
+                /* webpackChunkName: "brand" */ 'pages/TransactionView.vue'
+              ),
+            props: true,
+          },
+        ],
       },
       {
         path: 'categories',

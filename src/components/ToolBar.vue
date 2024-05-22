@@ -19,7 +19,6 @@ onMounted(() => {
 // Checking if the user has the preference of color scheme (dark or light) in the system 
 const checkThemeinSystem = () => {
   const userTheme = user.value?.preference.theme;
-  console.log('🚀 ~ file: ToolBar.vue:26 ~ checkThemeinSystem ~ userTheme:', userTheme)
 
   if (userTheme === 'LIGHT') {
     $q.dark.set(false);

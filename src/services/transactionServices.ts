@@ -6,7 +6,7 @@ export const getTransactionsService = async (
   query: QueryParameters
 ): Promise<AxiosResponse> => {
   return await http.get<AxiosInstance>(
-    `transactions${objectToQueryString(query)}`
+    `cashflows/find${objectToQueryString(query)}`
   );
 };
 

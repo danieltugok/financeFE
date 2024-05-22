@@ -5,6 +5,7 @@ import {
   getTransactionByIdService,
 } from 'src/services/transactionServices';
 import { useQuasar } from 'quasar';
+
 export const useTransactionComposable = () => {
   const $q = useQuasar();
   const {
@@ -15,6 +16,7 @@ export const useTransactionComposable = () => {
     setFilterTransaction,
     setFilterDrawerTransaction,
   } = useTransactionStore();
+
   const {
     transactions,
     transaction,
@@ -23,13 +25,14 @@ export const useTransactionComposable = () => {
     filterTransaction,
     filterDrawerTransaction,
   } = storeToRefs(useTransactionStore());
+
   async function getTransactions(query: any): Promise<void> {
     $q.loading.show();
     try {
       const { status, data } = await getTransactionsService(query);
       if (status === 200) {
         setTransactions(data?.data);
-        setCountTransactions(data?.meta?.total);
+        setCountTransactions(data?.meta?.totalItems);
       }
     } catch (error) {
       console.log(error);
@@ -37,6 +40,7 @@ export const useTransactionComposable = () => {
       $q.loading.hide();
     }
   }
+
   async function getTransactionById(id: number): Promise<void> {
     $q.loading.show();
     try {
@@ -48,6 +52,7 @@ export const useTransactionComposable = () => {
       $q.loading.hide();
     }
   }
+
   return {
     transactions,
     transaction,

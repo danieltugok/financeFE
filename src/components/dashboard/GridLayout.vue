@@ -169,15 +169,9 @@ function onChangeGridStack(gridstackInstance: GridStack): void {
         })
     })
 }
-// watch(() => $q.fullscreen.isActive, (value: boolean) => {
-//     console.log('fullscreen', value)
-// })
-
 watch(heightPanel, (): void => {
     if (grid) grid.cellHeight(heightGridStack.value / row.value)
 })
-
-
 onMounted(() => {
     onGridReady(options.value)
 })

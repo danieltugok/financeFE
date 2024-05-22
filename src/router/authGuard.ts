@@ -1,6 +1,6 @@
 import { userComposable } from 'src/composables/userComposable';
 
-export default async (to: any, from: any, next: any) => {
+export default async (to: any, from: any, next: any): Promise<void> => {
   const { accessToken, refreshToken, getProfile, setUser, user } =
     userComposable();
 
@@ -9,7 +9,7 @@ export default async (to: any, from: any, next: any) => {
     const access_token = localStorage.getItem('access_token');
     if (access_token) {
       try {
-        await getProfile();
+        if (!user.value) await getProfile();
         console.log('🚀 ~ user.value:', user.value);
         if (user.value) next();
         else {

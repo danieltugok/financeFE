@@ -35,5 +35,10 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
   Router.beforeEach(authGuard);
+  Router.onError((error, to) => {
+    console.log('🚀 ~ Router.onError ~ to:', to);
+    console.log('🚀 ~ Router.onError ~ error:', error);
+  });
+
   return Router;
 });

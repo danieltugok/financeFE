@@ -1,17 +1,20 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh Lpr fFf">
     <q-header>
       <q-toolbar class="q-pl-none">
         <q-btn icon="sym_r_notes" @click="toggleLeftDrawer" unelevated dense flat padding="13px 23.6px"
           class="no-border-radius" />
         <q-separator inset vertical dark />
         <q-toolbar-title>
-          <!-- <q-img src="src/assets/logotipo.svg" width="150px" /> -->
-          <h5 :class="$q.dark.isActive ? 'text-gray-300' : 'text-primary'">Studio 360</h5>
+          <div class="tw-relative">
+            <!-- <q-img src="src/assets/logotipo.svg" width="150px" /> -->
+            <h5 :class="$q.dark.isActive ? 'text-gray-300' : 'text-secondary'">Finance App</h5>
 
 
-          <!-- <q-skeleton type="rect" style="width: 150px" class="bg-secondary" /> -->
-          <q-badge class="absolute text-caption" color="secondary" style="top: 5px">beta</q-badge>
+            <!-- <q-skeleton type="rect" style="width: 150px" class="bg-secondary" /> -->
+            <q-badge class="absolute text-caption" color="secondary" style="top: 5px; right: 0px">beta</q-badge>
+
+          </div>
         </q-toolbar-title>
         <q-space />
         <div class="row q-gutter-md items-center">
@@ -36,7 +39,7 @@
       </div>
     </q-drawer>
     <q-drawer side="right" v-model="filterDrawerTransaction" :class="$q.dark.isActive ? '' : 'bg-white text-dark'"
-      :width="400" bordered v-if="routerCurrent == 'Transactions'">
+      :width="400" bordered v-if="routerCurrent == 'Balance'">
       <filter-list-transaction @close="setFilterDrawerTransaction(false)" />
     </q-drawer>
 
@@ -65,7 +68,6 @@ const toggleLeftDrawer = () => {
 }
 
 const $q = useQuasar()
-console.log('🚀 ~ $q:', $q)
 
 // get status
 console.log($q.dark.isActive) // true, false

@@ -30,5 +30,13 @@ export const notify = (
   });
 };
 
+export const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(price);
+};
+// console.log(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol'}).format(amount));
+
 export const isRequired = (v: string) => (v && v.length > 0) || 'REQUIRED';
 export const isEmail = (v: string) => /.+@.+/.test(v) || 'E-mail must be valid';
