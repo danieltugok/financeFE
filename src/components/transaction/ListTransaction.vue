@@ -42,11 +42,6 @@ const perPage = ref<number>(10);
 
 const pagination = computed<any>({
     get: () => {
-        console.log('?>>> ', {
-            rowsPerPage: +perPage.value,
-            sortBy: 'created_at',
-            descending: true
-        })
         return {
             rowsPerPage: +perPage.value,
             sortBy: 'created_at',
@@ -68,6 +63,7 @@ const perPageOptions = [
     { label: '10', value: 10 },
     { label: '20', value: 20 },
     { label: '50', value: 50 },
+    { label: '100', value: 100 },
 ]
 const columns = ref<QTableProps['columns']>([
     // {

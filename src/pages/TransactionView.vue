@@ -17,6 +17,10 @@
                     <q-chip removable @remove="onRemoveFilter(item)" icon-remove="sym_r_close" :label="item"
                         text-color="white" color="primary" />
                 </template>
+                <q-btn :text-color="$q.dark.isActive ? 'white' : 'dark'" :color="$q.dark.isActive ? 'primary' : 'white'"
+                    :icon="filterDialog ? 'sym_r_plus' : 'sym_r_plus'" class="borderless q-card--bordered"
+                    @click="detailDialog = !detailDialog" dense unelevated padding="sm">
+                </q-btn>
                 <q-input v-model="search" type="search" label="Buscar..." dense outlined
                     :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" debounce="300" clear-icon="sym_r_close"
                     clearable>
@@ -44,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import ListTransaction from 'src/components/transaction/ListTransaction.vue'
 import InputDateRanger from 'src/components/InputDateRanger.vue'
 import DetailTransaction from 'src/components/transaction/DetailTransaction.vue';

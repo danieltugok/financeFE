@@ -3,7 +3,7 @@
         :gs-min-h="item.minH">
         <q-card class="grid-stack-item-content " flat bordered>
             <q-resize-observer @resize="onResize" />
-            <q-toolbar style="min-height:40px" class="grid-stack-item__header q-pr-xs ">
+            <q-toolbar style="min-height:30px" class="grid-stack-item__header q-pr-xs ">
                 <q-toolbar-title class="text-body2">
                     {{ item.content?.title || 'Sem título' }}
                 </q-toolbar-title>

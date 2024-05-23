@@ -28,6 +28,22 @@ export const useTransactionComposable = () => {
 
   async function getTransactions(query: any): Promise<void> {
     $q.loading.show();
+
+    // Transform from & to -> startDate & endDate
+    const { from, to, ...rest } = query;
+    query.startDate = from
+      ? new Date(from).toISOString()
+      : query.startDate
+      ? query.startDate
+      : null;
+    query.endDate = to
+      ? new Date(to).toISOString()
+      : query.endDate
+      ? query.endDate
+      : null;
+    delete query.from;
+    delete query.to;
+
     try {
       const { status, data } = await getTransactionsService(query);
       if (status === 200) {

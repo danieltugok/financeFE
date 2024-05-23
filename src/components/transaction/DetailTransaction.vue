@@ -4,7 +4,8 @@
             <q-toolbar-title class="text-body1">
                 Detalhes
             </q-toolbar-title>
-            <q-btn flat round dense icon="sym_r_close" to="/balance" />
+            <!-- <q-btn flat round dense icon="sym_r_close" to="/balance" /> -->
+            <q-btn flat round dense icon="sym_r_close" @click="closeDetailTransaction" />
         </q-toolbar>
         <q-separator />
         <q-card-section class="q-pt-none">
@@ -115,6 +116,9 @@
 <script lang="ts" setup>
 import { onUnmounted } from 'vue'
 import { useTransactionComposable } from 'src/composables/transactionComposable'
+import { useRoute, useRouter } from 'vue-router'
+
+const emit = defineEmits(['close'])
 const { transaction, getTransactionById, setTransaction } = useTransactionComposable()
 const props = defineProps({
     id: {
@@ -123,9 +127,18 @@ const props = defineProps({
         default: ''
     },
 })
+console.log('🚀 ~ id:', props.id)
+const router = useRouter()
+
 // if (props.id) getTransactionById(+props.id)
 
 // onUnmounted(() => {
 //     setTransaction({})
 // })	
+const closeDetailTransaction = () => {
+    emit('close');
+    router.push({ path: '/balance' })
+
+
+}
 </script>

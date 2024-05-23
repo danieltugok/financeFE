@@ -16,7 +16,7 @@
 </template>
 <script lang="ts" setup>
 import { getWidgetByTypeService } from 'src/services/transactionServices';
-import { defineProps, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { Dark } from 'quasar'
 import Vue3Autocounter from 'vue3-autocounter';
 import { useDashboardComposable } from 'src/composables/dashboardComposable';
