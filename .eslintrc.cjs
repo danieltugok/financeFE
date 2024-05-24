@@ -4,11 +4,14 @@ module.exports = {
   // Remove this if you have an higher level ESLint config file (it usually happens into a monorepos)
   root: true,
 
+  // parser: '@typescript-eslint/parser',
+
   // https://eslint.vuejs.org/user-guide/#how-to-use-a-custom-parser
   // Must use parserOptions instead of "parser" to allow vue-eslint-parser to keep working
   // `parser: 'vue-eslint-parser'` is already included with any 'plugin:vue/**' config and should be omitted
   parserOptions: {
     parser: require.resolve('@typescript-eslint/parser'),
+    project: './tsconfig.json',
     extraFileExtensions: ['.vue'],
   },
 
@@ -17,6 +20,13 @@ module.exports = {
     es2021: true,
     node: true,
   },
+
+  ignorePatterns: [
+    '.eslintrc.js',
+    'postcss.config.cjs',
+    'tailwind.config.js',
+    'quasar.config.js',
+  ],
 
   // Rules order is important, please avoid shuffling them
   extends: [
