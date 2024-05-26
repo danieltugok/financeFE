@@ -29,7 +29,7 @@ const gridItems = ref<any[]>([
         w: 3,
         h: 1,
         minH: 1,
-        minW: 2,
+        minW: 3,
         id: '1',
         content: {
             title: 'Compra mais alta',
@@ -44,7 +44,7 @@ const gridItems = ref<any[]>([
         w: 3,
         h: 1,
         minH: 1,
-        minW: 2,
+        minW: 3,
         id: '1',
         content: {
             title: 'Entrada mais alta',

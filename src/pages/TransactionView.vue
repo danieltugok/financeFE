@@ -2,7 +2,6 @@
 
 <template>
     <q-page class="wrapper" padding>
-        {{ $route.params.id }}
         <q-breadcrumbs v-if="!$q.screen.lt.sm">
             <template v-slot:separator>
                 <q-icon size="1.2em" name="chevron_right" color="primary" />
@@ -18,8 +17,8 @@
                         text-color="white" color="primary" />
                 </template>
                 <q-btn :text-color="$q.dark.isActive ? 'white' : 'dark'" :color="$q.dark.isActive ? 'primary' : 'white'"
-                    :icon="filterDialog ? 'sym_r_plus' : 'sym_r_plus'" class="borderless q-card--bordered"
-                    @click="detailDialog = !detailDialog" dense unelevated padding="sm">
+                    icon="mdi-tab-plus" class="borderless q-card--bordered" @click="detailDialog = !detailDialog" dense
+                    unelevated padding="sm">
                 </q-btn>
                 <q-input v-model="search" type="search" label="Buscar..." dense outlined
                     :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" debounce="300" clear-icon="sym_r_close"
@@ -42,7 +41,7 @@
         <list-transaction />
     </q-page>
     <q-dialog v-model="detailDialog" persistent>
-        <detail-transaction @close="detailDialog = false"
+        <detail-transaction @close="detailDialog = false" @updated="transactionDetailUpdated"
             :id="typeof $route.params.id === 'string' ? $route.params.id : ''" />
     </q-dialog>
 </template>
@@ -69,6 +68,10 @@ watch(search, (value) => {
 watch(() => route.params.id, (newId, oldId) => {
     onOpenDetail()
 }, { immediate: true })
+const transactionDetailUpdated = () => {
+    console.log('updated')
+    getTransactions(queryTransaction.value)
+}
 
 function onRemoveFilter(item: string): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

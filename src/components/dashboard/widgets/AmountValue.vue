@@ -1,6 +1,5 @@
 <template>
     <q-card :style="{ height: `${size.height}px` }" class="no-scroll tw-relative">
-        <span class="tw-absolute tw-left">{{ date.formatDate(amountValue?.date, 'DD/MM/YYYY') }}</span>
         <div class="absolute-center" style="min-width: 300px;">
             <q-item class="text-h4">
                 <q-item-section class="text-center">
@@ -8,7 +7,11 @@
                         <q-icon v-if="item.content.icon" :name="item.content.icon" :color="item.content.status" />
                         R$ <vue3-autocounter :startAmount="0" :endAmount="+amountValue?.debit" :duration="1"
                             :autoinit="true" separator="." /></q-item-label>
-                    <q-item-label class="text-caption" lines="2">{{ amountValue?.description }}</q-item-label>
+                    <q-item-label class="text-caption" lines="2">
+                        <span class="tw-text-neutral-500">{{ date.formatDate(amountValue?.date, 'DD/MM/YYYY')
+                            }}</span><br>
+                        {{ amountValue?.description }}
+                    </q-item-label>
                 </q-item-section>
             </q-item>
 
@@ -48,13 +51,25 @@ async function getAmountValueTransactions(query: QueryParameters = {}): Promise<
     if (props.item.content.status == 'positive') query.sortBy = 'desc';
     else query.sortBy = 'asc';
     await getTransactions({ ...query, ...queryTransaction.value, perPage: 1 })
-    // if (transactions.value.length > 0) amountValue.value = transactions.value[0]
-    amountValue.value = transactions.value[0]
+    if (props.item.content.status === 'negative' && transactions.value[0].debit > 0) {
+        amountValue.value = {
+            debit: 0,
+            description: '-',
+            date: '-'
+        }
+    } else if (props.item.content.status === 'positive' && transactions.value[0].debit < 0) {
+        amountValue.value = {
+            debit: 0,
+            description: '-',
+            date: '-'
+        }
+    } else amountValue.value = transactions.value[0]
     loading.value = false
 }
 
 watch(filterDashboard, (value) => {
     getAmountValueTransactions({ ...value, ...queryTransaction.value })
-})
-getAmountValueTransactions()
+}, { immediate: true })
+
+// getAmountValueTransactions()
 </script>

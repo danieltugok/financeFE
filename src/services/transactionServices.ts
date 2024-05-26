@@ -24,3 +24,11 @@ export const getWidgetByTypeService = async (
     `widgets/${type}/dashboard${objectToQueryString(query)}`
   );
 };
+
+export const setTransactionDetailService = async (
+  transitionId: string,
+  query: QueryParameters = {}
+): Promise<AxiosResponse> => {
+  console.log('🚀 ~ query:', query);
+  return await http.patch<AxiosInstance>(`cashflows/${transitionId}`, query);
+};

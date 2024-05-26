@@ -15,10 +15,10 @@
                         <q-icon name="sym_r_store" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>Empresa</q-item-label>
+                        <q-item-label>ID</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-item-label>{{ transaction.client }}</q-item-label>
+                        <q-item-label>{{ transaction.id }}</q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-separator />
@@ -27,10 +27,18 @@
                         <q-icon name="sym_r_person" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>Genero</q-item-label>
+                        <q-item-label>Description</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-item-label lines="2">{{ transaction.gender }}</q-item-label>
+                        <div class="q-gutter-md" style="min-width: 300px">
+                            <q-input v-model="transaction.description" type="search" dense outlined
+                                :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" clear-icon="sym_r_close" clearable>
+                                <!-- <q-item-label lines="2">{{ transaction.description }}</q-item-label> -->
+                                <!-- <template v-slot:prepend>
+                                    <q-icon name="sym_r_search" />
+                                </template> -->
+                            </q-input>
+                        </div>
                     </q-item-section>
                 </q-item>
                 <q-separator />
@@ -42,9 +50,16 @@
                         <q-item-label>Valor</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-item-label lines="2">R$ {{ transaction.value }} x {{ transaction.quantity }} = <span
-                                class="text-body1 text-weight-bold">R${{
-                                    transaction.value * transaction.quantity }}</span> </q-item-label>
+                        <q-item-label lines="2">
+                            <div class="q-gutter-md" style="min-width: 300px">
+                                <q-input v-model="transaction.debit" type="search" dense outlined
+                                    :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" clear-icon="sym_r_close"
+                                    clearable />
+                            </div>
+                            <!-- <span class="text-body1 text-weight-bold"
+                                :class="+transaction.debit < 0 ? 'text-negative' : 'text-primary'">
+                                R$ {{ transaction.debit }}</span> -->
+                        </q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-separator />
@@ -53,10 +68,21 @@
                         <q-icon name="sym_r_paid" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>Metodo de pagamento</q-item-label>
+                        <q-item-label>Date</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-item-label lines="2">{{ transaction.payment_method }}</q-item-label>
+                        <q-item-label lines="2">
+                            <!-- {{ date.formatDate(transaction.date, 'DD/MM/YYYY') }} -->
+                            <div class="q-gutter-md" style="min-width: 300px">
+                                <q-input v-model="formattedDate" type="search" dense outlined
+                                    :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" clear-icon="sym_r_close"
+                                    clearable />
+
+                                <input-date v-model="transaction.date" dense outlined clear-icon="sym_r_close" clearable
+                                    :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" />
+
+                            </div>
+                        </q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-separator />
@@ -65,10 +91,10 @@
                         <q-icon name="sym_r_thumbs_up_down" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>Status do pagamento</q-item-label>
+                        <q-item-label>Creator</q-item-label>
                     </q-item-section>
                     <q-item-section side>
-                        <q-item-label lines="2">{{ transaction.payment_status }}</q-item-label>
+                        <q-item-label lines="2">{{ transaction.user?.name }}</q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-separator />
@@ -77,49 +103,32 @@
                         <q-icon name="sym_r_my_location" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label>Dados de localizaçao</q-item-label>
+                        <q-item-label>Email</q-item-label>
                     </q-item-section>
                     <q-item-section side top>
-                        <q-item-label>{{ transaction.region }}</q-item-label>
-                        <q-item-label>{{ transaction.lat }} , {{ transaction.long }}</q-item-label>
-                    </q-item-section>
-                </q-item>
-                <q-separator />
-                <q-item>
-                    <q-item-section side>
-                        <q-icon name="sym_r_devices" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label>Dispositivo</q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                        <q-item-label>{{ transaction.device }}</q-item-label>
-                    </q-item-section>
-                </q-item>
-                <q-separator />
-                <q-item>
-                    <q-item-section side top>
-                        <q-icon name="sym_r_location_on" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label>Ip - UserAgent</q-item-label>
-                        <q-item-label caption lines="2">{{ transaction.user_agent }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side top>
-                        <q-item-label>{{ transaction.ip }}</q-item-label>
+                        <q-item-label>{{ transaction.user?.email }}</q-item-label>
                     </q-item-section>
                 </q-item>
             </q-list>
+            <q-space />
+            <div class="row item-center justify-end q-gutter-sm">
+                <q-btn color="primary" :label="$t('cancel')" class="tw-px-3" outline no-caps dense unelevated
+                    @click="closeDetailTransaction" />
+                <q-btn color="primary" class="tw-px-3" :label="$t('save')" dense unelevated @click="saveTransaction" />
+            </div>
         </q-card-section>
     </q-card>
 </template>
 <script lang="ts" setup>
-import { onUnmounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useTransactionComposable } from 'src/composables/transactionComposable'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { date } from 'quasar'
+import InputDate from 'src/components/InputDate.vue'
 
-const emit = defineEmits(['close'])
-const { transaction, getTransactionById, setTransaction } = useTransactionComposable()
+
+const emit = defineEmits(['close', 'updated'])
+const { transaction, getTransactionById, setTransaction, setTransactionDetail } = useTransactionComposable()
 const props = defineProps({
     id: {
         type: String,
@@ -127,18 +136,30 @@ const props = defineProps({
         default: ''
     },
 })
-console.log('🚀 ~ id:', props.id)
-const router = useRouter()
+const router = useRouter();
+const formattedDate = ref('');
 
-// if (props.id) getTransactionById(+props.id)
+const saveTransaction = async () => {
+    await setTransactionDetail(transaction.value);
+    emit('updated');
+}
 
-// onUnmounted(() => {
-//     setTransaction({})
-// })	
+watch(() => props.id, () => {
+    if (props.id) {
+        console.log('🚀 ~ watch ~ props.id:', props.id)
+        getTransactionById(props.id)
+    } else {
+        setTransaction({});
+    }
+}, { immediate: true });
+
+watch(() => transaction.value, () => {
+    formattedDate.value = date.formatDate(transaction.value.date, 'DD/MM/YYYY')
+}, { immediate: true });
+
 const closeDetailTransaction = () => {
     emit('close');
     router.push({ path: '/balance' })
-
-
 }
+
 </script>

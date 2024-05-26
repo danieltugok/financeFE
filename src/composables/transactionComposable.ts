@@ -2,6 +2,7 @@ import { useTransactionStore } from 'src/stores/transaction';
 import { storeToRefs } from 'pinia';
 import {
   getTransactionsService,
+  setTransactionDetailService,
   getTransactionByIdService,
 } from 'src/services/transactionServices';
 import { useQuasar } from 'quasar';
@@ -27,6 +28,7 @@ export const useTransactionComposable = () => {
   } = storeToRefs(useTransactionStore());
 
   async function getTransactions(query: any): Promise<void> {
+    console.log('🚀 ~ getTransactions ~ query:', query);
     $q.loading.show();
 
     // Transform from & to -> startDate & endDate
@@ -57,11 +59,35 @@ export const useTransactionComposable = () => {
     }
   }
 
-  async function getTransactionById(id: number): Promise<void> {
+  async function getTransactionById(id: string): Promise<void> {
     $q.loading.show();
     try {
-      const { status, data } = await getTransactionByIdService(id);
-      if (status === 200) setTransaction(data);
+      const { status, data } = await getTransactionsService({ id: id });
+      if (status === 200) {
+        setTransaction(data?.data[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      $q.loading.hide();
+    }
+  }
+
+  async function setTransactionDetail(transactionValue: any): Promise<void> {
+    $q.loading.show();
+    const transitionId = transactionValue?.id;
+    const transactionDetail = JSON.parse(JSON.stringify(transactionValue));
+    delete transactionDetail?.id;
+    delete transactionDetail?.user;
+    transactionDetail.debit = +transactionDetail?.debit;
+    try {
+      const { status, data } = await setTransactionDetailService(
+        transitionId,
+        transactionDetail
+      );
+      if (status === 200) {
+        return data;
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -78,6 +104,7 @@ export const useTransactionComposable = () => {
     filterDrawerTransaction,
     getTransactions,
     setTransaction,
+    setTransactionDetail,
     getTransactionById,
     setQueryTransaction,
     setFilterTransaction,
