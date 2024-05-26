@@ -4,6 +4,7 @@ import {
   getTransactionsService,
   setTransactionDetailService,
   getTransactionByIdService,
+  createTransactionDetailService,
 } from 'src/services/transactionServices';
 import { useQuasar } from 'quasar';
 
@@ -95,6 +96,32 @@ export const useTransactionComposable = () => {
     }
   }
 
+  async function createTransactionDetail(transactionValue: any): Promise<void> {
+    $q.loading.show();
+
+    // validating data to send
+    const transitionId = transactionValue?.id;
+    const transactionDetail = JSON.parse(JSON.stringify(transactionValue));
+    delete transactionDetail?.id;
+    delete transactionDetail?.user;
+    transactionDetail.amount = +transactionDetail?.debit;
+    delete transactionDetail?.debit;
+
+    try {
+      const { status, data } = await createTransactionDetailService(
+        transitionId,
+        transactionDetail
+      );
+      if (status === 200) {
+        return data;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      $q.loading.hide();
+    }
+  }
+
   return {
     transactions,
     transaction,
@@ -105,6 +132,7 @@ export const useTransactionComposable = () => {
     getTransactions,
     setTransaction,
     setTransactionDetail,
+    createTransactionDetail,
     getTransactionById,
     setQueryTransaction,
     setFilterTransaction,

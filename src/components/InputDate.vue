@@ -4,7 +4,8 @@
         <template v-slot:prepend>
             <q-icon name="event" class="cursor-pointer" color="secondary">
                 <q-popup-proxy ref="popupRef">
-                    <q-date today-btn v-model="proxyDate" @update:model-value="popupRef.hide()" color="accent" />
+                    <q-date today-btn v-model="proxyDate"
+                        @update:model-value="[popupRef.hide(), emit('update', proxyDate)]" color="accent" />
                 </q-popup-proxy>
             </q-icon>
         </template>
@@ -23,39 +24,27 @@ const props = defineProps({
     value: {
         type: [String, Object],
         default: null
-    }
+    },
+    transitionDate: {
+        type: String,
+        default: null
+    },
 })
 
-// proxyDate.value = props.value;
 
 watch(proxyDate, (value: any) => {
-    console.log('🚀 ~ watch ~ value:', value)
-    // if (value) {
-    //     dateRange.value =
-    //         value.from && value.to
-    //             ? `${date.formatDate(value.from, 'DD/MM/YYYY')} - ${date.formatDate(value.to, 'DD/MM/YYYY')}`
-    //             : date.formatDate(value, 'DD/MM/YYYY')
-    // } else dateRange.value = null
-    // if (value.from && value.to) emit('update', value)
+    if (value) {
+        dateRange.value = date.formatDate(value, 'DD/MM/YYYY')
+    } else dateRange.value = null
 }, { immediate: true })
 
-
-
-
-watch(() => props.value, (value: any) => {
-    console.log('🚀 ~ watch ~ props.value:', value)
-    // if (value) {
-    //     dateRange.value =
-    //         value.from && value.to
-    //             ? `${date.formatDate(value.from, 'DD/MM/YYYY')} - ${date.formatDate(value.to, 'DD/MM/YYYY')}`
-    //             : date.formatDate(value, 'DD/MM/YYYY')
-    // } else dateRange.value = null
-    // if (value.from && value.to) emit('update', value)
+watch(() => props.transitionDate, (value: any) => {
+    if (value) proxyDate.value = date.formatDate(props.transitionDate, 'YYYY/MM/DD');
 }, { immediate: true })
 
 function onClear() {
     dateRange.value = null
-    proxyDate.value = { from: null, to: null }
+    proxyDate.value = {}
     emit('update', proxyDate.value)
 }
 </script>

@@ -32,3 +32,11 @@ export const setTransactionDetailService = async (
   console.log('🚀 ~ query:', query);
   return await http.patch<AxiosInstance>(`cashflows/${transitionId}`, query);
 };
+
+export const createTransactionDetailService = async (
+  transitionId: string,
+  query: QueryParameters = {}
+): Promise<AxiosResponse> => {
+  console.log('🚀 ~ query:', query);
+  return await http.post<AxiosInstance>('cashflows', query);
+};

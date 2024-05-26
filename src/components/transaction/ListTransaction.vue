@@ -84,7 +84,7 @@ const columns = ref<QTableProps['columns']>([
     },
     { name: 'description', align: 'left', label: 'Description', field: 'description', sortable: true },
     { name: 'amount', align: 'left', label: 'Amount', field: 'debit', format: val => `R$ ${val}`, sortable: true },
-    { name: 'date', align: 'left', label: 'Date', field: 'date', format: val => date.formatDate(val, 'DD/MM/YYYY HH:mm'), sortable: true },
+    { name: 'date', align: 'left', label: 'Date', field: 'date', format: val => date.formatDate(val, 'DD/MM/YYYY'), sortable: true },
     // { name: 'created_at', align: 'left', label: 'Created at', field: 'created_at', format: val => date.formatDate(val, 'DD/MM/YYYY HH:mm') },
 ])
 const pagesNumber = computed<number>(() => Math.ceil((countTransactions.value || 0) / pagination.value.rowsPerPage))

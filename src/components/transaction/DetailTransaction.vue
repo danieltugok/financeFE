@@ -12,7 +12,7 @@
             <q-list>
                 <q-item>
                     <q-item-section side>
-                        <q-icon name="sym_r_store" />
+                        <q-icon name="sym_r_fingerprint" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>ID</q-item-label>
@@ -24,7 +24,7 @@
                 <q-separator />
                 <q-item>
                     <q-item-section side>
-                        <q-icon name="sym_r_person" />
+                        <q-icon name="sym_r_description" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>Description</q-item-label>
@@ -65,7 +65,7 @@
                 <q-separator />
                 <q-item>
                     <q-item-section side>
-                        <q-icon name="sym_r_paid" />
+                        <q-icon name="sym_r_calendar_month" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>Date</q-item-label>
@@ -74,13 +74,9 @@
                         <q-item-label lines="2">
                             <!-- {{ date.formatDate(transaction.date, 'DD/MM/YYYY') }} -->
                             <div class="q-gutter-md" style="min-width: 300px">
-                                <q-input v-model="formattedDate" type="search" dense outlined
-                                    :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" clear-icon="sym_r_close"
-                                    clearable />
-
-                                <input-date v-model="transaction.date" dense outlined clear-icon="sym_r_close" clearable
+                                <input-date :transitionDate="transaction.date" @update="dateUpdated" dense outlined
+                                    clear-icon="sym_r_close" clearable
                                     :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" />
-
                             </div>
                         </q-item-label>
                     </q-item-section>
@@ -88,7 +84,7 @@
                 <q-separator />
                 <q-item>
                     <q-item-section side>
-                        <q-icon name="sym_r_thumbs_up_down" />
+                        <q-icon name="sym_r_person" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>Creator</q-item-label>
@@ -100,7 +96,7 @@
                 <q-separator />
                 <q-item>
                     <q-item-section side>
-                        <q-icon name="sym_r_my_location" />
+                        <q-icon name="sym_r_mail" />
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>Email</q-item-label>
@@ -125,10 +121,13 @@ import { useTransactionComposable } from 'src/composables/transactionComposable'
 import { useRouter } from 'vue-router'
 import { date } from 'quasar'
 import InputDate from 'src/components/InputDate.vue'
+import { userComposable } from 'src/composables/userComposable'
 
 
 const emit = defineEmits(['close', 'updated'])
-const { transaction, getTransactionById, setTransaction, setTransactionDetail } = useTransactionComposable()
+const { transaction, getTransactionById, setTransaction, setTransactionDetail, createTransactionDetail } = useTransactionComposable()
+const { user } = userComposable()
+
 const props = defineProps({
     id: {
         type: String,
@@ -140,8 +139,13 @@ const router = useRouter();
 const formattedDate = ref('');
 
 const saveTransaction = async () => {
-    await setTransactionDetail(transaction.value);
+    if (props.id) await setTransactionDetail(transaction.value);
+    else await createTransactionDetail(transaction.value);
     emit('updated');
+}
+
+const dateUpdated = (value: any) => {
+    setTransaction({ ...transaction.value, date: value })
 }
 
 watch(() => props.id, () => {
@@ -149,7 +153,7 @@ watch(() => props.id, () => {
         console.log('🚀 ~ watch ~ props.id:', props.id)
         getTransactionById(props.id)
     } else {
-        setTransaction({});
+        setTransaction({ user: { name: user.value?.name, email: user.value?.email } });
     }
 }, { immediate: true });
 
