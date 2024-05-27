@@ -39,4 +39,6 @@ export const formatPrice = (price: number): string => {
 // console.log(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol'}).format(amount));
 
 export const isRequired = (v: string) => (v && v.length > 0) || 'REQUIRED';
+export const isSelectRequired = (v: any) =>
+  (v && v.value.length > 0) || 'REQUIRED';
 export const isEmail = (v: string) => /.+@.+/.test(v) || 'E-mail must be valid';

@@ -39,7 +39,8 @@
       </div>
     </q-drawer>
     <q-drawer side="right" v-model="filterDrawerTransaction" :class="$q.dark.isActive ? '' : 'bg-white text-dark'"
-      :width="400" bordered v-if="routerCurrent == 'Balance'">
+      :width="400" bordered>
+      <!-- v-if="routerCurrent == 'Balance'" -->
       <filter-list-transaction @close="setFilterDrawerTransaction(false)" />
     </q-drawer>
 

@@ -29,7 +29,6 @@ export const useTransactionComposable = () => {
   } = storeToRefs(useTransactionStore());
 
   async function getTransactions(query: any): Promise<void> {
-    console.log('🚀 ~ getTransactions ~ query:', query);
     $q.loading.show();
 
     // Transform from & to -> startDate & endDate

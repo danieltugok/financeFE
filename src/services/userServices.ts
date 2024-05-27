@@ -1,14 +1,19 @@
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import http from 'src/plugins/http';
-import {
-  // objectToQueryString,
-  type QueryParameters,
-} from 'src/utils/helpers';
+import { objectToQueryString, type QueryParameters } from 'src/utils/helpers';
 
 export const getUsersService = async (
   query: QueryParameters
 ): Promise<AxiosResponse> => {
-  return await http.get<AxiosInstance>('users');
+  return await http.get<AxiosInstance>(
+    `users/find${objectToQueryString(query)}`
+  );
+};
+
+export const deleteUsersService = async (
+  id: string
+): Promise<AxiosResponse> => {
+  return await http.delete<AxiosInstance>(`users/${id}`);
 };
 
 export const getUserImageProfileService = async (
@@ -41,6 +46,12 @@ export const getLoginService = async (
   password: string
 ): Promise<AxiosResponse> => {
   return await http.post<AxiosInstance>('auth/login', { username, password });
+};
+
+export const CreateUserService = async (
+  userUpated: any
+): Promise<AxiosResponse> => {
+  return await http.post<AxiosInstance>('users/', userUpated);
 };
 
 //NEED TO BE DONE IN NESTJS

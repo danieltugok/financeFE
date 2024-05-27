@@ -5,14 +5,17 @@ export default async (to: any, from: any, next: any): Promise<void> => {
     userComposable();
 
   if (to.meta.requiresAuth) {
-    console.log('to.meta.requiresAuth: ', to.meta.requiresAuth);
     const access_token = localStorage.getItem('access_token');
     if (access_token) {
       try {
         if (!user.value) await getProfile();
-        console.log('🚀 ~ user.value:', user.value);
-        if (user.value) next();
-        else {
+
+        if (user.value) {
+          if (to.meta?.roles && to.meta?.roles?.length > 0) {
+            if (to.meta?.roles?.includes(user.value?.role)) next();
+            else next({ path: '/dashboard' });
+          } else next();
+        } else {
           next({
             path: '/signin',
             query: {

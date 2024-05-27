@@ -51,13 +51,13 @@ async function getAmountValueTransactions(query: QueryParameters = {}): Promise<
     if (props.item.content.status == 'positive') query.sortBy = 'desc';
     else query.sortBy = 'asc';
     await getTransactions({ ...query, ...queryTransaction.value, perPage: 1 })
-    if (props.item.content.status === 'negative' && transactions.value[0].debit > 0) {
+    if (props.item.content.status === 'negative' && transactions.value[0]?.debit > 0) {
         amountValue.value = {
             debit: 0,
             description: '-',
             date: '-'
         }
-    } else if (props.item.content.status === 'positive' && transactions.value[0].debit < 0) {
+    } else if (props.item.content.status === 'positive' && transactions.value[0]?.debit < 0) {
         amountValue.value = {
             debit: 0,
             description: '-',

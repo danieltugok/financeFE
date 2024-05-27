@@ -65,7 +65,17 @@ const routes: RouteRecordRaw[] = [
           import(/* webpackChunkName: "main" */ 'pages/UsersView.vue'),
         meta: {
           requiresAuth: true,
+          roles: ['ADMIN'],
         },
+        children: [
+          {
+            path: ':id/',
+            name: 'UserDetail',
+            component: () =>
+              import(/* webpackChunkName: "brand" */ 'pages/UsersView.vue'),
+            props: true,
+          },
+        ],
       },
       {
         path: '404',
