@@ -96,7 +96,7 @@
                         <q-item-section side>
                             <div style="min-width: 230px">
                                 <q-chip text-color="white" :color="oneUser?.isVerified ? 'primary' : 'negative'"
-                                    :label="oneUser?.isVerified.toString()" />
+                                    :label="oneUser?.isVerified?.toString()" />
                             </div>
                         </q-item-section>
                     </q-item>

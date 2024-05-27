@@ -69,8 +69,9 @@ async function onSubmit() {
   console.log('🚀 ~ onSubmit ~ accessToken.value:', accessToken.value)
   if (getLoginResponse.status === 201 && accessToken.value)
     router.push({ path: route.query.redirect as string || '/' })
-  if (getLoginResponse.statusCode === 401) {
-    notify('negative', getLoginResponse.message, 'username or password are incorrect');
+  else {
+    // notify('negative', getLoginResponse.message, 'username or password are incorrect');
+    notify('negative', getLoginResponse.error, getLoginResponse.message);
   }
 }
 
