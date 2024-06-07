@@ -122,7 +122,7 @@ import { useRouter } from 'vue-router'
 import { date } from 'quasar'
 import InputDate from 'src/components/InputDate.vue'
 import { userComposable } from 'src/composables/userComposable'
-
+import { notify } from 'src/utils/helpers'
 
 const emit = defineEmits(['close', 'updated'])
 const { transaction, getTransactionById, setTransaction, setTransactionDetail, createTransactionDetail } = useTransactionComposable()
@@ -139,9 +139,26 @@ const router = useRouter();
 const formattedDate = ref('');
 
 const saveTransaction = async () => {
-    if (props.id) await setTransactionDetail(transaction.value);
-    else await createTransactionDetail(transaction.value);
-    emit('updated');
+    if (props.id) {
+        const response = await setTransactionDetail(transaction.value);
+        console.log('🚀 ~ saveTransaction ~ response:', response)
+        if (response?.status === 200 || response?.status === 201) {
+            notify('positive', 'User saved successfully', '');
+            emit('updated');
+            closeDetailTransaction();
+        }
+        else notify('negative', response.response.data.error, response.response.data.message);
+
+    }
+    else {
+        const response = await createTransactionDetail(transaction.value);
+        if (response?.status === 200 || response?.status === 201) {
+            notify('positive', 'User saved successfully', '');
+            emit('updated');
+            closeDetailTransaction();
+        }
+        else notify('negative', response.response.data.error, response.response.data.message);
+    }
 }
 
 const dateUpdated = (value: any) => {

@@ -102,8 +102,8 @@ const onDelete = (row: any) => {
 }
 
 const clickedToDeleteUser = async () => {
-    const reponse = await deleteUsersService(deleteUser.value.id)
-    if (reponse.status === 200) {
+    const response = await deleteUsersService(deleteUser.value.id)
+    if (response.status === 200) {
         notify('negative', 'User Deleted', 'User was deleted successfully');
         confirmDelete.value = false
         getUsers(queryUsers.value)

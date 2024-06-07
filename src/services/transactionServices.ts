@@ -10,6 +10,12 @@ export const getTransactionsService = async (
   );
 };
 
+export const deleteTransactionService = async (
+  id: string
+): Promise<AxiosResponse> => {
+  return await http.delete<AxiosInstance>(`cashflows/${id}`);
+};
+
 export const getTransactionByIdService = async (
   id: number
 ): Promise<AxiosResponse> => {

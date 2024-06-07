@@ -6,7 +6,12 @@ export const useTransactionStore = defineStore('transaction', () => {
   const transactions = ref<any[]>([]);
   const transaction = ref<any>({});
   const countTransactions = ref<number>(0);
-  const queryTransaction = ref<QueryParameters>({ page: 1, perPage: 10 });
+  const queryTransaction = ref<QueryParameters>({
+    page: 1,
+    perPage: 10,
+    orderBy: 'date',
+    sortBy: 'asc',
+  });
   const filterTransaction = ref<any>({});
   const filterDrawerTransaction = ref<boolean>(false);
 

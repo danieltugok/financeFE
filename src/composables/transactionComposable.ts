@@ -5,6 +5,7 @@ import {
   setTransactionDetailService,
   getTransactionByIdService,
   createTransactionDetailService,
+  deleteTransactionService,
 } from 'src/services/transactionServices';
 import { useQuasar } from 'quasar';
 
@@ -73,20 +74,22 @@ export const useTransactionComposable = () => {
     }
   }
 
-  async function setTransactionDetail(transactionValue: any): Promise<void> {
+  async function setTransactionDetail(transactionValue: any): Promise<any> {
     $q.loading.show();
     const transitionId = transactionValue?.id;
     const transactionDetail = JSON.parse(JSON.stringify(transactionValue));
     delete transactionDetail?.id;
     delete transactionDetail?.user;
+    delete transactionDetail?.user;
+    delete transactionDetail?.referenceCategoryBalance;
     transactionDetail.debit = +transactionDetail?.debit;
     try {
       const { status, data } = await setTransactionDetailService(
         transitionId,
         transactionDetail
       );
-      if (status === 200) {
-        return data;
+      if (status === 200 || status === 201) {
+        return { status, data };
       }
     } catch (error) {
       console.log(error);
@@ -95,7 +98,7 @@ export const useTransactionComposable = () => {
     }
   }
 
-  async function createTransactionDetail(transactionValue: any): Promise<void> {
+  async function createTransactionDetail(transactionValue: any): Promise<any> {
     $q.loading.show();
 
     // validating data to send
@@ -111,8 +114,8 @@ export const useTransactionComposable = () => {
         transitionId,
         transactionDetail
       );
-      if (status === 200) {
-        return data;
+      if (status === 200 || status === 201) {
+        return { status, data };
       }
     } catch (error) {
       console.log(error);
@@ -136,5 +139,6 @@ export const useTransactionComposable = () => {
     setQueryTransaction,
     setFilterTransaction,
     setFilterDrawerTransaction,
+    deleteTransactionService,
   };
 };
