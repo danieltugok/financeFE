@@ -66,7 +66,6 @@ const showPassword = ref<boolean>(false)
 
 async function onSubmit() {
   const getLoginResponse = await getLogin(form.value.email, form.value.password);
-  console.log('🚀 ~ onSubmit ~ accessToken.value:', accessToken.value)
   if (getLoginResponse.status === 201 && accessToken.value)
     router.push({ path: route.query.redirect as string || '/' })
   else {

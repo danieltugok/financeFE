@@ -48,9 +48,11 @@ const amountValue = ref<any>({});
 
 async function getAmountValueTransactions(query: QueryParameters = {}): Promise<void> {
     loading.value = true
+    query.orderBy = 'debit';
     if (props.item.content.status == 'positive') query.sortBy = 'desc';
     else query.sortBy = 'asc';
-    await getTransactions({ ...query, ...queryTransaction.value, perPage: 1 })
+
+    await getTransactions({ ...queryTransaction.value, ...query, perPage: 1 })
     if (props.item.content.status === 'negative' && transactions.value[0]?.debit > 0) {
         amountValue.value = {
             debit: 0,

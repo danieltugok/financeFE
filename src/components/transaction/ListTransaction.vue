@@ -3,11 +3,11 @@
         hide-pagination class="table-card bg-transparent" @row-click="onDetaill">
         <template #body-cell-amount="props">
             <q-td v-if="props.row.description === 'balance'" :props="props">
-                --
-                <!-- <q-chip :label="`R$ ${formatPrice(props.row.amount)}`" square text-color="white" /> -->
+                <q-chip :label="`${formatPrice(props.row.debit)}`" square
+                    :text-color="props.row.debit > 0 ? 'positive' : 'negative'" color="white" />
             </q-td>
             <q-td v-else :props="props">
-                <q-chip :label="`R$ ${formatPrice(props.row.debit)}`" square text-color="white"
+                <q-chip :label="`${formatPrice(props.row.debit)}`" square text-color="white"
                     :color="props.row.debit > 0 ? 'positive' : 'negative'" />
             </q-td>
         </template>
@@ -86,7 +86,7 @@ import { deleteTransactionService } from 'src/services/transactionServices';
 const route = useRouter()
 const { getTransactions, transactions, queryTransaction, setQueryTransaction, countTransactions } = useTransactionComposable()
 const page = ref<number>(1);
-const perPage = ref<number>(10);
+const perPage = ref<number>(100);
 const confirmDelete = ref<boolean>(false);
 const deleteTransaction = ref<any>(null);
 
@@ -105,13 +105,21 @@ const pagination = computed<any>({
 
 const processedTableData = computed(() => {
     let processedData = [];
-    let previousDate = null;
+    let previousDate: string | null = null;
+    let dayAmount = 0;
 
     for (let row of transactions.value) {
         if (previousDate && row.date !== previousDate) {
-            // Insert a new row when the date changes
+
+            dayAmount += transactions.value.filter(el => {
+                if (previousDate) {
+                    if (new Date(el.date).getTime() === new Date(previousDate).getTime()) return el
+                }
+            }).reduce((acc, cur) => acc + cur.debit, 0);
+            // console.log('🚀 ~ dayAmount:', dayAmount)
+
             processedData.push({
-                description: 'balance', debit: 777, date: previousDate, user: {
+                description: 'balance', debit: dayAmount, date: previousDate, user: {
                     email: '',
                     id: '',
                     name: ''
@@ -122,13 +130,13 @@ const processedTableData = computed(() => {
         previousDate = row.date;
     }
 
-    processedData.push({
-        description: 'balance', debit: 777, date: previousDate, user: {
-            email: '',
-            id: '',
-            name: ''
-        }
-    });
+    // processedData.push({
+    //     description: 'balance', debit: 777, date: previousDate, user: {
+    //         email: '',
+    //         id: '',
+    //         name: ''
+    //     }
+    // });
 
     return processedData;
 })
@@ -166,7 +174,7 @@ const columns = ref<QTableProps['columns']>([
     { name: 'date', align: 'left', label: 'Date', field: 'date', format: val => date.formatDate(val, 'DD/MM/YYYY'), sortable: false },
     { name: 'description', align: 'left', label: 'Description', field: 'description', sortable: false },
     { name: 'user', required: true, label: 'User', align: 'left', field: row => row.user.name, format: val => `${val}`, sortable: false },
-    { name: 'amount', align: 'left', label: 'Amount', field: 'debit', format: val => `R$ ${val}`, sortable: false },
+    { name: 'amount', align: 'right', label: 'Amount', field: 'debit', format: val => `R$ ${val}`, sortable: false },
     // { name: 'created_at', align: 'left', label: 'Created at', field: 'created_at', format: val => date.formatDate(val, 'DD/MM/YYYY HH:mm') },
 ])
 const pagesNumber = computed<number>(() => Math.ceil((countTransactions.value || 0) / pagination.value.rowsPerPage))
