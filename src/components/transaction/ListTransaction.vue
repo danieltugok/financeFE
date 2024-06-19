@@ -104,24 +104,15 @@ const pagination = computed<any>({
 
 const calculateProcessedTableData = () => {
     let processedData = [];
-    let previousDate: string | null = null;
-    let totalBalance = balanceInfo.value ? balanceInfo.value[0]?.totalAmount : 0;
-    for (let row of transactions.value.reverse()) {
-
-        // dayAmount += transactions.value.filter(el => {
-        //     if (new Date(el.date).getTime() === new Date(previousDate).getTime()) return el
-        // }).reduce((acc, cur) => acc + cur.debit, 0);
-
-        // processedData.push({
-        //     description: 'balance', debit: dayAmount, date: previousDate, user: {
-        //         email: '',
-        //         id: '',
-        //         name: ''
-        //     }
-        // });
-        processedData.push({ ...row, balance: totalBalance });
-        totalBalance += row.debit;
-        previousDate = row.date;
+    if (transactions.value.length > 0) {
+        let previousDate: string | null = null;
+        let totalBalance = balanceInfo.value ? balanceInfo.value[0]?.totalAmount : 0;
+        const reservedTransactions = transactions.value.reverse();
+        for (let row of reservedTransactions) {
+            processedData.push({ ...row, balance: totalBalance });
+            totalBalance += row.debit;
+            previousDate = row.date;
+        }
     }
     return processedData.reverse();
 };
@@ -167,6 +158,7 @@ watch(() => [page.value, perPage.value], () => {
         page: page.value,
         perPage: pagination.value.rowsPerPage,
     }
+    console.log('🚀 ~ watch ~ queryTransaction.value:', queryTransaction.value)
     setQueryTransaction({ ...queryTransaction.value, ...query })
     getTransactions(queryTransaction.value)
 })

@@ -23,13 +23,26 @@
 
             <div v-if="subCategory.ReferenceCategoryBalance.length > 0" class="q-pa-lg">
               <q-chip v-for="referenceCategory in subCategory.ReferenceCategoryBalance" :key="referenceCategory.id"
-                removable v-model="referenceCategory.isActive" color="teal" text-color="white" icon="cake"
-                :label="referenceCategory.name">
-                <q-tooltip>{{ referenceCategory.name }}</q-tooltip>
+                removable v-model="referenceCategory.isActive"
+                :color="referenceCategory.name != '' ? 'teal' : 'tw-slate-500'" text-color="white"
+                icon="mdi-chevron-right">
+                <!-- :label="referenceCategory.name" -->
+                <!-- <q-input label-color="white" class="" v-model="referenceCategory.name" type="text" /> -->
+                <!-- <q-tooltip>{{ referenceCategory.name }}</q-tooltip> -->
+
+                <q-input dense dark borderless v-model="referenceCategory.name" ref="itemRefs"
+                  class="tw-min-w-3 tw-uppercase">
+                  <!-- <template v-slot:append>
+                    <q-icon v-if="referenceCategory.name === ''" name="search" />
+                    <q-icon v-else name="clear" class="cursor-pointer" @click="referenceCategory.name = ''" />
+                  </template> -->
+                </q-input>
               </q-chip>
-              <div class="q-chip row inline no-wrap items-center bg-teal text-white q-chip--colored tw-cursor-pointer"
+              <!-- <div v-if="subCategory.ReferenceCategoryBalance.at(-1).name != ''" -->
+              <div
+                class="q-chip row inline no-wrap items-center bg-primary text-white q-chip--colored tw-cursor-pointer"
                 @click="addSubCategory(subCategory.ReferenceCategoryBalance)">
-                <q-chip class="tw-cursor-pointer" color="teal" text-color="white" icon="add">
+                <q-chip class="tw-cursor-pointer" color="primary" text-color="white" icon="add">
                   <q-tooltip>Add a new word to associate on this subcategory</q-tooltip>
                 </q-chip>
               </div>
@@ -60,8 +73,9 @@ const categoryTransactionService = async () => {
   const result = await getCategoryTransactionService();
   categoryTransaction.value = result.data;
 }
-
+const itemRefs = ref<any[]>([])
 const addSubCategory = (list: any) => {
+  // const lastItemName = list.at(-1).name;
   list.push({
     id: '',
     name: '',
@@ -69,8 +83,8 @@ const addSubCategory = (list: any) => {
     icon: 'mdi-email-outline',
     ReferenceCategoryBalance: []
   })
-  console.log('>>>', list)
-
+  // let test = itemRefs.value.findIndex(el => el.nativeEl._value === lastItemName);
+  // itemRefs.value.at(test + 1).focus()
 }
 
 categoryTransactionService();
