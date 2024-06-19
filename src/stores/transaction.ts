@@ -8,7 +8,7 @@ export const useTransactionStore = defineStore('transaction', () => {
   const countTransactions = ref<number>(0);
   const queryTransaction = ref<QueryParameters>({
     page: 1,
-    perPage: 10,
+    perPage: 100,
     orderBy: 'date',
     sortBy: 'asc',
   });

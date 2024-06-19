@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import LanguageSelect from './LanguageSelect.vue';
 import { userComposable } from 'src/composables/userComposable'
 import UploadProfileImage from 'src/components/UploadProfileImage.vue'
+import { useRouter } from 'vue-router';
 
 const { user, updateUser } = userComposable()
 const $q = useQuasar();
 
 const theme = ref<string | null>(null);
-const userImageProfile = ref('https://cdn.quasar.dev/img/avatar.png');
 const dialogUpdateAvatar = ref(false)
 
 onMounted(() => {
   checkThemeinSystem();
 });
+
+const router = useRouter();
 
 // Checking if the user has the preference of color scheme (dark or light) in the system 
 const checkThemeinSystem = () => {
@@ -50,7 +52,7 @@ const toggle = async () => {
   }
 }
 const getProfileImage = computed<string>(() => {
-  return user.value?.imageProfile ? `http://localhost:3000/api/v1/users/profile-image/${user.value?.imageProfile}` : 'https://cdn.quasar.dev/img/avatar.png';
+  return user.value?.imageProfile ? `${import.meta.env.VITE_API_URL}users/profile-image/${user.value?.imageProfile}` : 'https://cdn.quasar.dev/img/avatar.png';
 });
 
 const updateProfile = (val: any) => {
@@ -59,6 +61,11 @@ const updateProfile = (val: any) => {
   // dialogUpdateAvatar.value = false;
 }
 
+const logout = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  router.push({ path: '/signin' })
+}
 
 </script>
 
@@ -102,7 +109,8 @@ const updateProfile = (val: any) => {
           <q-item-section>{{ theme }} Mode</q-item-section>
         </q-item>
         <q-separator />
-        <q-item clickable v-close-popup to="signin">
+        <q-item clickable v-close-popup @click="logout">
+          <!-- to="signin" -->
           <q-item-section side>
             <q-icon name="mdi-exit-to-app" color="negative" />
           </q-item-section>

@@ -26,9 +26,15 @@
                     <template v-slot:prepend>
                         <q-icon name="sym_r_search" />
                     </template>
+                    <template v-slot:append>
+                        <q-btn flat dense color="primary" icon="mdi-tune"
+                            @click="detailDialogFilter = !detailDialogFilter" />
+                    </template>
                 </q-input>
-                <input-date-ranger @update="onFilterDate" dense outlined clear-icon="sym_r_close" clearable
-                    :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" />
+
+                <!-- <input-date-ranger @update="onFilterDate" dense outlined clear-icon="sym_r_close" clearable
+                    :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" /> -->
+
                 <!-- <q-btn :text-color="$q.dark.isActive ? 'white' : 'dark'" :color="$q.dark.isActive ? 'primary' : 'white'"
                     :icon="filterDialog ? 'sym_r_filter_list_off' : 'sym_r_filter_list'"
                     class="borderless q-card--bordered" @click="setFilterDrawerTransaction(!filterDrawerTransaction)"
@@ -44,6 +50,10 @@
         <detail-transaction @close="detailDialog = false" @updated="transactionDetailUpdated"
             :id="typeof $route.params.id === 'string' ? $route.params.id : ''" />
     </q-dialog>
+    <q-dialog v-model="detailDialogFilter" persistent>
+        <detail-filter @close="detailDialogFilter = false" @filterTransaction="onFilterTransactions"
+            :id="typeof $route.params.id === 'string' ? $route.params.id : ''" />
+    </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -51,12 +61,14 @@ import { ref, watch } from 'vue'
 import ListTransaction from 'src/components/transaction/ListTransaction.vue'
 import InputDateRanger from 'src/components/InputDateRanger.vue'
 import DetailTransaction from 'src/components/transaction/DetailTransaction.vue';
+import DetailFilter from 'src/components/transaction/DetailFilter.vue';
 import { useTransactionComposable } from 'src/composables/transactionComposable'
 import { useRoute } from 'vue-router'
 
 const { getTransactions, queryTransaction, setQueryTransaction, filterTransaction, setFilterTransaction, setFilterDrawerTransaction, filterDrawerTransaction } = useTransactionComposable()
 const filterDialog = ref<boolean>(false)
 const detailDialog = ref<boolean>(false)
+const detailDialogFilter = ref<boolean>(false)
 const search = ref<string>('')
 
 const route = useRoute()
@@ -80,13 +92,50 @@ function onRemoveFilter(item: string): void {
     setQueryTransaction({ ...queryTransaction.value, [item]: '' })
     getTransactions(queryTransaction.value)
 }
-function onFilterDate(date: any): void {
-    let { from, to, ...rest } = date;
-    from = from ? new Date(from).toISOString() : null;
-    to = to ? new Date(to).toISOString() : null;
-    let dateParse = { startDate: from, endDate: to, ...rest };
+function onFilterTransactions({ sortBy, timeFilter }: any): void {
+    console.log(sortBy, timeFilter)
+    let filterParse: any = { orderBy: null, sortBy: null, startDate: null, endDate: null };
 
-    setQueryTransaction({ ...queryTransaction.value, ...dateParse })
+    switch (sortBy) {
+        case 'date':
+            filterParse.orderBy = 'date'
+            break;
+        case 'debitAsc':
+            filterParse.orderBy = 'debit'
+            filterParse.sortBy = 'asc'
+            break;
+        case 'debitDesc':
+            filterParse.orderBy = 'debit'
+            filterParse.sortBy = 'desc'
+            break;
+        default:
+            break;
+    }
+    switch (timeFilter) {
+        case 30:
+            filterParse.startDate = new Date(new Date().setDate(new Date().getDate() - 30));
+            filterParse.endDate = new Date()
+            break;
+        case 60:
+            filterParse.startDate = new Date(new Date().setDate(new Date().getDate() - 60));
+            filterParse.endDate = new Date()
+            break;
+        case 90:
+            filterParse.startDate = new Date(new Date().setDate(new Date().getDate() - 90));
+            filterParse.endDate = new Date()
+            break;
+        case 'Current Year':
+            filterParse.startDate = new Date(new Date().getFullYear(), 0, 1);
+            filterParse.endDate = new Date(new Date().getFullYear(), 11, 31);
+            break;
+        case 'Last Year':
+            filterParse.startDate = new Date(new Date().getFullYear() - 1, 0, 1);
+            filterParse.endDate = new Date(new Date().getFullYear() - 1, 11, 31);
+            break;
+        default:
+            break;
+    }
+    setQueryTransaction({ ...queryTransaction.value, ...filterParse })
     getTransactions(queryTransaction.value)
 }
 function onOpenDetail(): void {

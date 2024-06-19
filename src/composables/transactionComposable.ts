@@ -1,11 +1,13 @@
 import { useTransactionStore } from 'src/stores/transaction';
 import { storeToRefs } from 'pinia';
 import {
+  getBalanceService,
   getTransactionsService,
   setTransactionDetailService,
   getTransactionByIdService,
   createTransactionDetailService,
   deleteTransactionService,
+  getCategoryTransactionService,
 } from 'src/services/transactionServices';
 import { useQuasar } from 'quasar';
 
@@ -140,5 +142,7 @@ export const useTransactionComposable = () => {
     setFilterTransaction,
     setFilterDrawerTransaction,
     deleteTransactionService,
+    getBalanceService,
+    getCategoryTransactionService,
   };
 };

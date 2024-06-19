@@ -1,4 +1,5 @@
 <template>
+    --{{ refInput }}--
     <q-file ref="refInput" v-show="false" bottom-slots v-model="image" accept="image/*"
         @update:model-value="setImage" />
     <q-card flat :style="$q.screen.lt.sm ? 'max-width:100%' : 'min-width:412px'" bordered>

@@ -2,48 +2,46 @@
     <q-table :rows="processedTableData" row-key="id" :key="Date.now()" flat :columns="columns" :pagination="pagination"
         hide-pagination class="table-card bg-transparent" @row-click="onDetaill">
         <template #body-cell-amount="props">
-            <q-td v-if="props.row.description === 'balance'" :props="props">
-                <q-chip :label="`${formatPrice(props.row.debit)}`" square
-                    :text-color="props.row.debit > 0 ? 'positive' : 'negative'" color="white" />
-            </q-td>
-            <q-td v-else :props="props">
-                <q-chip :label="`${formatPrice(props.row.debit)}`" square text-color="white"
-                    :color="props.row.debit > 0 ? 'positive' : 'negative'" />
+            <q-td :props="props">
+                <div class="tw-flex tw-flex-col">
+                    <span :class="props.row.debit > 0 ? 'text-positive' : 'text-negative'">{{
+                        formatPrice(props.row.debit) }}</span>
+                    <span class="tw-text-neutral-500">Balance: {{ formatPrice(props.row.balance) }}</span>
+                </div>
             </q-td>
         </template>
         <template #body-cell-delete="props">
-            <q-td v-if="props.row.description === 'balance'" />
-            <q-td v-else :props="props">
+            <q-td :props="props">
                 <q-btn color="white" text-color="negative" icon="delete" dense round unelevated size="11px"
                     @click.stop="onDelete(props.row)" />
             </q-td>
         </template>
-        <template #body-cell="props">
-            <q-td v-if="props.row.description === 'balance'" class="balance-cell q-gutter-x-sm"
-                :class="props.col.name === 'user' ? 'hidden' : ''" :colspan="props.col.name === 'description' ? 2 : 1"
-                :props="props">
-                <template v-if="props.col.name === 'date'">
-                    {{ date.formatDate(props.row.date, 'DD/MM/YYYY') }}
-                </template>
-                <template v-if="props.col.name === 'description'">
-                    {{ props.row.description }}
-                </template>
-                <template v-if="props.col.name === 'user'">
-                    {{ props.row.user.name }}
-                </template>
-            </q-td>
-            <q-td v-else :props="props">
-                <template v-if="props.col.name === 'date'">
-                    {{ date.formatDate(props.row.date, 'DD/MM/YYYY') }}
-                </template>
-                <template v-if="props.col.name === 'description'">
-                    {{ props.row.description }}
-                </template>
-                <template v-if="props.col.name === 'user'">
-                    {{ props.row.user.name }}
-                </template>
+        <template #body-cell-description="props">
+            <q-td :props="props">
+                <div class="tw-flex tw-items-center">
+                    <q-icon
+                        :name="props.row.referenceCategoryBalance?.sub_category_balance?.icon ? props.row.referenceCategoryBalance?.sub_category_balance?.icon : 'mdi-shape-outline'"
+                        color="primary" size="32px" class="q-mr-md" />
+                    <div class="tw-flex tw-flex-col">
+                        <span class="text-black">{{ props.row.description }}</span>
+                        <span class="tw-text-neutral-500">
+                            {{ date.formatDate(props.row.date, 'DD/MM/YYYY') }}
+                            {{ props.row.referenceCategoryBalance ? '|' : '' }}
+                            {{ props.row.referenceCategoryBalance?.sub_category_balance.name }}</span>
+                    </div>
+                </div>
             </q-td>
         </template>
+        <!-- <template #body-cell="props">
+            <q-td class="q-gutter-x-sm" :props="props">
+                <template v-if="props.col.name === 'description'">
+                    <div class="tw-flex tw-flex-col">
+                        {{ props.row.description }}
+                        {{ date.formatDate(props.row.date, 'DD/MM/YYYY') }}
+                    </div>
+                </template>
+            </q-td>
+        </template> -->
     </q-table>
     <div class="row item-center q-mt-sm">
         <div class="row item-center q-mt-sm" :class="$q.screen.lt.sm ? 'justify-center' : 'justify-center'"
@@ -84,11 +82,12 @@ import { formatPrice, notify } from 'src/utils/helpers'
 import { deleteTransactionService } from 'src/services/transactionServices';
 
 const route = useRouter()
-const { getTransactions, transactions, queryTransaction, setQueryTransaction, countTransactions } = useTransactionComposable()
+const { getTransactions, transactions, queryTransaction, setQueryTransaction, countTransactions, getBalanceService } = useTransactionComposable()
 const page = ref<number>(1);
 const perPage = ref<number>(100);
 const confirmDelete = ref<boolean>(false);
 const deleteTransaction = ref<any>(null);
+const balanceInfo = ref<any>(null);
 
 const pagination = computed<any>({
     get: () => {
@@ -103,43 +102,33 @@ const pagination = computed<any>({
     }
 })
 
-const processedTableData = computed(() => {
+const calculateProcessedTableData = () => {
     let processedData = [];
     let previousDate: string | null = null;
-    let dayAmount = 0;
+    let totalBalance = balanceInfo.value ? balanceInfo.value[0]?.totalAmount : 0;
+    for (let row of transactions.value.reverse()) {
 
-    for (let row of transactions.value) {
-        if (previousDate && row.date !== previousDate) {
+        // dayAmount += transactions.value.filter(el => {
+        //     if (new Date(el.date).getTime() === new Date(previousDate).getTime()) return el
+        // }).reduce((acc, cur) => acc + cur.debit, 0);
 
-            dayAmount += transactions.value.filter(el => {
-                if (previousDate) {
-                    if (new Date(el.date).getTime() === new Date(previousDate).getTime()) return el
-                }
-            }).reduce((acc, cur) => acc + cur.debit, 0);
-            // console.log('🚀 ~ dayAmount:', dayAmount)
-
-            processedData.push({
-                description: 'balance', debit: dayAmount, date: previousDate, user: {
-                    email: '',
-                    id: '',
-                    name: ''
-                }
-            });
-        }
-        processedData.push(row);
+        // processedData.push({
+        //     description: 'balance', debit: dayAmount, date: previousDate, user: {
+        //         email: '',
+        //         id: '',
+        //         name: ''
+        //     }
+        // });
+        processedData.push({ ...row, balance: totalBalance });
+        totalBalance += row.debit;
         previousDate = row.date;
     }
+    return processedData.reverse();
+};
 
-    // processedData.push({
-    //     description: 'balance', debit: 777, date: previousDate, user: {
-    //         email: '',
-    //         id: '',
-    //         name: ''
-    //     }
-    // });
-
-    return processedData;
-})
+const processedTableData = computed(() => {
+    return calculateProcessedTableData();
+});
 
 const onDelete = (row: any) => {
     confirmDelete.value = true
@@ -150,8 +139,9 @@ const clickedToDeleteTransaction = async () => {
     const response = await deleteTransactionService(deleteTransaction.value.id)
     if (response.status === 200) {
         notify('positive', 'Transaction Deleted', 'Transaction was deleted successfully');
-        confirmDelete.value = false
-        getTransactions(queryTransaction.value)
+        confirmDelete.value = false;
+        balanceService();
+        getTransactions(queryTransaction.value);
     }
     else notify('negative', 'Error', response.data.message);
 }
@@ -163,19 +153,10 @@ const perPageOptions = [
     { label: '100', value: 100 },
 ]
 const columns = ref<QTableProps['columns']>([
-    // {
-    //     name: 'id',
-    //     required: true,
-    //     label: 'ID',
-    //     align: 'left',
-    //     field: 'id',
-    // },
-    { name: 'delete', align: 'left', label: 'Actions', field: 'delete' },
-    { name: 'date', align: 'left', label: 'Date', field: 'date', format: val => date.formatDate(val, 'DD/MM/YYYY'), sortable: false },
+    // { name: 'date', align: 'left', label: 'Date', field: 'date', format: val => date.formatDate(val, 'DD/MM/YYYY'), sortable: false },
     { name: 'description', align: 'left', label: 'Description', field: 'description', sortable: false },
-    { name: 'user', required: true, label: 'User', align: 'left', field: row => row.user.name, format: val => `${val}`, sortable: false },
-    { name: 'amount', align: 'right', label: 'Amount', field: 'debit', format: val => `R$ ${val}`, sortable: false },
-    // { name: 'created_at', align: 'left', label: 'Created at', field: 'created_at', format: val => date.formatDate(val, 'DD/MM/YYYY HH:mm') },
+    { name: 'amount', align: 'right', label: 'Amount', field: 'debit', format: val => `R$${val}`, sortable: false },
+    { name: 'delete', align: 'right', label: 'Actions', field: 'delete' },
 ])
 const pagesNumber = computed<number>(() => Math.ceil((countTransactions.value || 0) / pagination.value.rowsPerPage))
 function onDetaill(event: Event, row: any): void {
@@ -189,21 +170,12 @@ watch(() => [page.value, perPage.value], () => {
     setQueryTransaction({ ...queryTransaction.value, ...query })
     getTransactions(queryTransaction.value)
 })
-
-getTransactions(queryTransaction.value)
-
+const balanceService = async () => {
+    const result = await getBalanceService();
+    balanceInfo.value = result.data;
+}
+balanceService();
+getTransactions({ ...queryTransaction.value, page: 1, perPage: pagination.value.rowsPerPage })
 </script>
 
-<style lang="scss">
-.q-table tbody {
-    .cursor-pointer:has(.balance-cell) {
-        max-height: 25px;
-        background-color: $grey-3;
-
-        td {
-            max-height: 25px;
-            background-color: yellow;
-        }
-    }
-}
-</style>
+<style lang="scss"></style>

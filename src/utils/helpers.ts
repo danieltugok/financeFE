@@ -1,6 +1,6 @@
 import { Notify } from 'quasar';
 export interface QueryParameters {
-  [key: string]: string | number | boolean | undefined;
+  [key: string]: string | number | boolean | undefined | null;
 }
 
 export const objectToQueryString = (
