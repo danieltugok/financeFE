@@ -8,6 +8,9 @@ import {
   createTransactionDetailService,
   deleteTransactionService,
   getCategoryTransactionService,
+  updateSubCategoryService,
+  createSubCategoryService,
+  deleteSubCategoryService,
 } from 'src/services/transactionServices';
 import { useQuasar } from 'quasar';
 
@@ -163,5 +166,8 @@ export const useTransactionComposable = () => {
     setTotalBalance,
     totalBalance,
     getTotalBalance,
+    updateSubCategoryService,
+    createSubCategoryService,
+    deleteSubCategoryService,
   };
 };

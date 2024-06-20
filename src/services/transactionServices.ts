@@ -53,3 +53,31 @@ export const createTransactionDetailService = async (
 ): Promise<AxiosResponse> => {
   return await http.post<AxiosInstance>('cashflows', query);
 };
+
+export const updateSubCategoryService = async (
+  transitionId: string,
+  query: QueryParameters = {}
+): Promise<AxiosResponse> => {
+  return await http.patch<AxiosInstance>(
+    `category-transaction/sub/${transitionId}`,
+    query
+  );
+};
+
+export const createSubCategoryService = async (
+  transitionId: string,
+  query: QueryParameters = {}
+): Promise<AxiosResponse> => {
+  return await http.post<AxiosInstance>(
+    `category-transaction/${transitionId}`,
+    query
+  );
+};
+
+export const deleteSubCategoryService = async (
+  transitionId: string
+): Promise<AxiosResponse> => {
+  return await http.delete<AxiosInstance>(
+    `category-transaction/${transitionId}`
+  );
+};

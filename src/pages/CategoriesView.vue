@@ -31,7 +31,7 @@
                 <!-- <q-tooltip>{{ referenceCategory.name }}</q-tooltip> -->
 
                 <q-input dense dark borderless v-model="referenceCategory.name" ref="itemRefs"
-                  @update:model-value="newValue => updateCategory(referenceCategory, newValue)"
+                  @update:model-value="newValue => upsertCategory(subCategory, referenceCategory, newValue)"
                   class="tw-min-w-3 tw-uppercase" debounce="600">
                   <!-- <template v-slot:append>
                     <q-icon v-if="referenceCategory.name === ''" name="search" />
@@ -65,7 +65,8 @@
 import { useTransactionComposable } from 'src/composables/transactionComposable';
 import { ref, watch, computed } from 'vue'
 import AddCategory from 'src/components/transaction/AddCategory.vue'
-const { getCategoryTransactionService } = useTransactionComposable();
+const { createSubCategoryService, updateSubCategoryService, deleteSubCategoryService, getCategoryTransactionService } = useTransactionComposable();
+import { notify } from 'src/utils/helpers'
 
 const addSubCategoryDialog = ref<boolean>(false)
 const categoryTransaction = ref<any[]>([]);
@@ -76,7 +77,8 @@ const categoryTransactionService = async () => {
 }
 const itemRefs = ref<any[]>([])
 const addSubCategory = (list: any) => {
-  // const lastItemName = list.at(-1).name;
+  const lastItemName = list.at(-1).name;
+  if (!lastItemName) return;
   list.push({
     id: '',
     name: '',
@@ -88,16 +90,28 @@ const addSubCategory = (list: any) => {
   // itemRefs.value.at(test + 1).focus()
 }
 
-const updateCategory = (referenceCategory: any, name: any) => {
-  console.log('🚀 ~ updateCategory ~ name:', name)
-  if (!referenceCategory.id) referenceCategory.id = 'XXX';
-  console.log('🚀 ~ updateCategory ~ id:', referenceCategory.id)
-  // const index = categoryTransaction.value.findIndex(el => el.id === id);
-  // categoryTransaction.value[index].name = name;
+const upsertCategory = async (subCategory: any, referenceCategory: any, name: any) => {
+  let response;
+  if (!referenceCategory.id) {
+    referenceCategory.id = 'XXX';
+    response = await createSubCategoryService(subCategory.id, { name });
+  } else {
+    response = await updateSubCategoryService(referenceCategory.id, { name })
+  }
+  if (response?.status === 200 || response?.status === 201) {
+    notify('positive', 'Sub Category saved successfully', '');
+    if (referenceCategory.id === 'XXX') referenceCategory.id = response.data.id;
+  }
+  else notify('negative', response.response.data.error, response.response.data.message);
+  return response;
 }
 
-const removeCategory = (id: string) => {
-  console.log('🚀 ~ updateCategory ~ id:', id)
+const removeCategory = async (id: string) => {
+  if (!id) return;
+  const response = await deleteSubCategoryService(id);
+  if (response?.status === 200 || response?.status === 201) notify('positive', 'Sub Category removed successfully', '');
+  else notify('negative', 'ERROR', '');
+  return response;
 }
 
 
