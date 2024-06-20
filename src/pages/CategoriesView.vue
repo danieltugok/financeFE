@@ -16,16 +16,48 @@
           :icon="transaction.icon" :label="transaction.name" caption=""
           header-class="bg-grey-3 text-weight-bold text-primary"
           :default-opened="transaction.SubCategoryBalance ? true : false">
+          <template v-slot:header>
+            <q-item-section avatar>
+              <q-avatar :icon="transaction.icon" color="white" text-color="primary" />
+            </q-item-section>
+            <q-item-section>
+              {{ transaction.name }}
+            </q-item-section>
+            <!-- <q-item-section side>
+              <q-icon name="mdi-tab-plus" color="primary" @click.stop="() => { console.log('print'); }" />
+            </q-item-section> -->
+          </template>
 
           <q-expansion-item v-for="subCategory in transaction.SubCategoryBalance" :key="subCategory.id"
             :header-inset-level=".2" expand-separator :icon="subCategory.icon || 'mdi-email-outline'"
-            :label="subCategory.name || '-'" header-class="bg-grey-2 text-border-color" default-opened>
+            :label="subCategory.name || '-'" header-class="bg-grey-2 text-border-color" v-model="subCategory.expanded">
+            <template v-slot:header>
+              <q-item-section avatar>
+                <q-avatar :icon="subCategory.icon || 'mdi-email-outline'" color="white" text-color="primary" />
+              </q-item-section>
+              <q-item-section>
+                {{ subCategory.name || '-' }}
+              </q-item-section>
+              <q-item-section side>
+                <div class="flex">
+                  <q-icon name="mdi-table-column-plus-after" class="tw-mr-2" color="primary" size="25px"
+                    @click.stop="subCategory.expanded = true, addSubCategory(subCategory.ReferenceCategoryBalance)">
+                    <q-tooltip>Add a new word to associate on this subcategory</q-tooltip>
+                  </q-icon>
+
+                  <q-icon name="mdi-delete" color="negative" size="25px"
+                    @click.stop="confirmDeleteCategory = true, deleteCategory = subCategory">
+                    <q-tooltip>Delete the whole Category</q-tooltip>
+                  </q-icon>
+                </div>
+              </q-item-section>
+            </template>
 
             <div v-if="subCategory.ReferenceCategoryBalance.length > 0" class="q-pa-lg">
               <q-chip v-for="referenceCategory in subCategory.ReferenceCategoryBalance" :key="referenceCategory.id"
-                removable @remove="removeCategory(referenceCategory.id)" v-model="referenceCategory.isActive"
-                :color="referenceCategory.name != '' ? 'teal' : 'tw-slate-500'" text-color="white"
-                icon="mdi-chevron-right">
+                removable @remove="removeReferenceCategory(subCategory.ReferenceCategoryBalance, referenceCategory.id)"
+                v-model="referenceCategory.isActive" :color="referenceCategory.name != '' ? 'teal' : 'tw-slate-500'"
+                text-color="white" icon="mdi-chevron-right">
                 <!-- :label="referenceCategory.name" -->
                 <!-- <q-input label-color="white" class="" v-model="referenceCategory.name" type="text" /> -->
                 <!-- <q-tooltip>{{ referenceCategory.name }}</q-tooltip> -->
@@ -39,7 +71,7 @@
                   </template> -->
                 </q-input>
               </q-chip>
-              <!-- <div v-if="subCategory.ReferenceCategoryBalance.at(-1).name != ''" -->
+
               <div
                 class="q-chip row inline no-wrap items-center bg-primary text-white q-chip--colored tw-cursor-pointer"
                 @click="addSubCategory(subCategory.ReferenceCategoryBalance)">
@@ -53,9 +85,20 @@
       </q-list>
     </div>
 
-    <q-dialog v-model="addSubCategoryDialog" persistent>
-      <AddCategory @close="addSubCategoryDialog = false"
-        :id="typeof $route.params.id === 'string' ? $route.params.id : ''" />
+    <q-dialog v-model="confirmDeleteCategory" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="delete" color="negative" text-color="white" />
+          <span class="q-ml-sm">Are you sure you want to delete the user "{{ deleteCategory.name }}" ?</span>
+          <div class="text-subtitle2">This action can't be undone</div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn color="primary" :label="$t('cancel')" class="tw-px-3" outline no-caps dense unelevated v-close-popup />
+          <q-btn color="negative" class="tw-px-3" :label="$t('delete')" dense unelevated
+            @click="clickedToDeleteCategory" />
+        </q-card-actions>
+      </q-card>
     </q-dialog>
 
   </q-page>
@@ -65,10 +108,11 @@
 import { useTransactionComposable } from 'src/composables/transactionComposable';
 import { ref, watch, computed } from 'vue'
 import AddCategory from 'src/components/transaction/AddCategory.vue'
-const { createSubCategoryService, updateSubCategoryService, deleteSubCategoryService, getCategoryTransactionService } = useTransactionComposable();
+const { createSubCategoryService, updateSubCategoryService, deleteSubCategoryService, deleteReferenceSubCategoryService, getCategoryTransactionService } = useTransactionComposable();
 import { notify } from 'src/utils/helpers'
 
-const addSubCategoryDialog = ref<boolean>(false)
+const confirmDeleteCategory = ref<boolean>(false)
+const deleteCategory = ref<any>(null);
 const categoryTransaction = ref<any[]>([]);
 
 const categoryTransactionService = async () => {
@@ -77,8 +121,12 @@ const categoryTransactionService = async () => {
 }
 const itemRefs = ref<any[]>([])
 const addSubCategory = (list: any) => {
-  const lastItemName = list.at(-1).name;
-  if (!lastItemName) return;
+  console.log("🚀 ~ addSubCategory ~ list:", list)
+  let lastItemName = null;
+  if (Object.keys(list).length > 0) {
+    lastItemName = list.at(-1).name;
+    if (!lastItemName) return;
+  }
   list.push({
     id: '',
     name: '',
@@ -86,8 +134,22 @@ const addSubCategory = (list: any) => {
     icon: 'mdi-email-outline',
     ReferenceCategoryBalance: []
   })
+  console.log("🚀 ~ addSubCategory ~ list2222 >>>> :", list)
   // let test = itemRefs.value.findIndex(el => el.nativeEl._value === lastItemName);
   // itemRefs.value.at(test + 1).focus()
+}
+
+const clickedToDeleteCategory = async () => {
+  const response = await deleteSubCategoryService(deleteCategory.value.id)
+  if (response.status === 200) {
+    notify('positive', 'Category Deleted', 'Category was deleted successfully');
+    confirmDeleteCategory.value = false
+
+    // var removeIndex = ReferenceCategoryBalance.map(item => item.id).indexOf(id);
+    // if (removeIndex > -1) ReferenceCategoryBalance.splice(removeIndex, 1);
+
+    categoryTransactionService()
+  } else notify('negative', 'ERROR', '');
 }
 
 const upsertCategory = async (subCategory: any, referenceCategory: any, name: any) => {
@@ -106,16 +168,16 @@ const upsertCategory = async (subCategory: any, referenceCategory: any, name: an
   return response;
 }
 
-const removeCategory = async (id: string) => {
+const removeReferenceCategory = async (ReferenceCategoryBalance: any, id: string) => {
+  var removeIndex = ReferenceCategoryBalance.map(item => item.id).indexOf(id);
+  if (removeIndex > -1) ReferenceCategoryBalance.splice(removeIndex, 1);
+
   if (!id) return;
-  const response = await deleteSubCategoryService(id);
+  const response = await deleteReferenceSubCategoryService(id);
   if (response?.status === 200 || response?.status === 201) notify('positive', 'Sub Category removed successfully', '');
   else notify('negative', 'ERROR', '');
   return response;
 }
-
-
-
 
 categoryTransactionService();
 

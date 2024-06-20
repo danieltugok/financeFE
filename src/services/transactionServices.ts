@@ -69,8 +69,16 @@ export const createSubCategoryService = async (
   query: QueryParameters = {}
 ): Promise<AxiosResponse> => {
   return await http.post<AxiosInstance>(
-    `category-transaction/${transitionId}`,
+    `category-transaction/sub/${transitionId}`,
     query
+  );
+};
+
+export const deleteReferenceSubCategoryService = async (
+  transitionId: string
+): Promise<AxiosResponse> => {
+  return await http.delete<AxiosInstance>(
+    `category-transaction/sub/${transitionId}`
   );
 };
 
