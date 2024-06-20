@@ -54,21 +54,19 @@
             </template>
 
             <div v-if="subCategory.ReferenceCategoryBalance.length > 0" class="q-pa-lg">
-              <q-chip v-for="referenceCategory in subCategory.ReferenceCategoryBalance" :key="referenceCategory.id"
-                removable @remove="removeReferenceCategory(subCategory.ReferenceCategoryBalance, referenceCategory.id)"
+              <q-chip v-for="(referenceCategory, index) in subCategory.ReferenceCategoryBalance"
+                :key="referenceCategory.id" removable
+                :icon-remove="referenceCategory.canDelete ? 'mdi-close-circle-outline' : 'mdi-close-circle'"
+                @update:value="beforeRemove(referenceCategory, subCategory.ReferenceCategoryBalance)"
+                @remove="beforeRemove(referenceCategory, subCategory.ReferenceCategoryBalance)"
                 v-model="referenceCategory.isActive" :color="referenceCategory.name != '' ? 'teal' : 'tw-slate-500'"
-                text-color="white" icon="mdi-chevron-right">
-                <!-- :label="referenceCategory.name" -->
-                <!-- <q-input label-color="white" class="" v-model="referenceCategory.name" type="text" /> -->
-                <!-- <q-tooltip>{{ referenceCategory.name }}</q-tooltip> -->
+                @focusout="referenceCategory.canDelete = false" text-color="white" icon="mdi-chevron-right">
 
-                <q-input dense dark borderless v-model="referenceCategory.name" ref="itemRefs"
+                <q-input dense dark borderless v-model="referenceCategory.name"
+                  :ref="el => { if (el) itemRefs[index] = el }"
                   @update:model-value="newValue => upsertCategory(subCategory, referenceCategory, newValue)"
-                  class="tw-min-w-3 tw-uppercase" debounce="600">
-                  <!-- <template v-slot:append>
-                    <q-icon v-if="referenceCategory.name === ''" name="search" />
-                    <q-icon v-else name="clear" class="cursor-pointer" @click="referenceCategory.name = ''" />
-                  </template> -->
+                  class="tw-min-w-3 tw-uppercase" debounce="600"
+                  @keydown.enter="addSubCategory(subCategory.ReferenceCategoryBalance)">
                 </q-input>
               </q-chip>
 
@@ -106,7 +104,7 @@
 
 <script setup lang="ts">
 import { useTransactionComposable } from 'src/composables/transactionComposable';
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import AddCategory from 'src/components/transaction/AddCategory.vue'
 const { createSubCategoryService, updateSubCategoryService, deleteSubCategoryService, deleteReferenceSubCategoryService, getCategoryTransactionService } = useTransactionComposable();
 import { notify } from 'src/utils/helpers'
@@ -114,16 +112,15 @@ import { notify } from 'src/utils/helpers'
 const confirmDeleteCategory = ref<boolean>(false)
 const deleteCategory = ref<any>(null);
 const categoryTransaction = ref<any[]>([]);
-
+const itemRefs = ref([]);
 const categoryTransactionService = async () => {
   const result = await getCategoryTransactionService();
   categoryTransaction.value = result.data;
 }
-const itemRefs = ref<any[]>([])
+
 const addSubCategory = (list: any) => {
-  console.log("🚀 ~ addSubCategory ~ list:", list)
   let lastItemName = null;
-  if (Object.keys(list).length > 0) {
+  if (list.length > 0) {
     lastItemName = list.at(-1).name;
     if (!lastItemName) return;
   }
@@ -134,21 +131,34 @@ const addSubCategory = (list: any) => {
     icon: 'mdi-email-outline',
     ReferenceCategoryBalance: []
   })
-  console.log("🚀 ~ addSubCategory ~ list2222 >>>> :", list)
-  // let test = itemRefs.value.findIndex(el => el.nativeEl._value === lastItemName);
-  // itemRefs.value.at(test + 1).focus()
+  nextTick(() => {
+    let index = list.length - 1;
+    let input = itemRefs.value[index];
+    if (input) {
+      input.focus();
+    }
+  });
+}
+
+const beforeRemove = (referenceSubCategory: any, referenceSubCategoryList: any[]) => {
+  referenceSubCategory.isActive = true
+  if (!referenceSubCategory.canDelete) {
+    referenceSubCategory.canDelete = true;
+    return;
+  }
+  referenceSubCategory.isActive = false;
+  removeReferenceCategory(referenceSubCategoryList, referenceSubCategory.id)
 }
 
 const clickedToDeleteCategory = async () => {
   const response = await deleteSubCategoryService(deleteCategory.value.id)
   if (response.status === 200) {
     notify('positive', 'Category Deleted', 'Category was deleted successfully');
-    confirmDeleteCategory.value = false
-
+    confirmDeleteCategory.value = false;
+    // Possibly to delete from the Array manually to not need to request `categoryTransactionService` to update the list over again
     // var removeIndex = ReferenceCategoryBalance.map(item => item.id).indexOf(id);
     // if (removeIndex > -1) ReferenceCategoryBalance.splice(removeIndex, 1);
-
-    categoryTransactionService()
+    categoryTransactionService();
   } else notify('negative', 'ERROR', '');
 }
 
@@ -165,7 +175,16 @@ const upsertCategory = async (subCategory: any, referenceCategory: any, name: an
     if (referenceCategory.id === 'XXX') referenceCategory.id = response.data.id;
   }
   else notify('negative', response.response.data.error, response.response.data.message);
-  return response;
+  nextTick(() => {
+    console.log("🚀 ~ upsertCategory ~ subCategory:", subCategory)
+    console.log("🚀 ~ nextTick ~ referenceCategory:", referenceCategory)
+    let index = subCategory.ReferenceCategoryBalance.length - 1;
+    console.log("🚀 ~ nextTick ~ index:", index)
+    let input = itemRefs.value[index];
+    if (input) {
+      input.focus();
+    }
+  });
 }
 
 const removeReferenceCategory = async (ReferenceCategoryBalance: any, id: string) => {

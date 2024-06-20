@@ -35,7 +35,6 @@ http.interceptors.response.use(
         originalConfig._retry = true;
         try {
           const { data, status } = await getRefreshTokenService();
-          console.log('🚀 ~ data:', data);
           if (status === 200 || status === 201) {
             localStorage.setItem('access_token', data.accessToken);
             localStorage.setItem('refresh_token', data.refreshToken);
