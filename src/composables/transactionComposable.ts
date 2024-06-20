@@ -19,12 +19,14 @@ export const useTransactionComposable = () => {
     setCountTransactions,
     setQueryTransaction,
     setFilterTransaction,
+    setTotalBalance,
     setFilterDrawerTransaction,
   } = useTransactionStore();
 
   const {
     transactions,
     transaction,
+    totalBalance,
     queryTransaction,
     countTransactions,
     filterTransaction,
@@ -68,6 +70,20 @@ export const useTransactionComposable = () => {
       const { status, data } = await getTransactionsService({ id: id });
       if (status === 200) {
         setTransaction(data?.data[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      $q.loading.hide();
+    }
+  }
+
+  async function getTotalBalance(): Promise<void> {
+    $q.loading.show();
+    try {
+      const { status, data } = await getBalanceService();
+      if (status === 200) {
+        setTotalBalance(data[0]);
       }
     } catch (error) {
       console.log(error);
@@ -144,5 +160,8 @@ export const useTransactionComposable = () => {
     deleteTransactionService,
     getBalanceService,
     getCategoryTransactionService,
+    setTotalBalance,
+    totalBalance,
+    getTotalBalance,
   };
 };

@@ -1,8 +1,10 @@
 {
   "extends": "@quasar/app-vite/tsconfig-preset",
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "strict": false
   },
+  "noImplicitAny": false,
   "exclude": [
     "./dist",
     "./.quasar",

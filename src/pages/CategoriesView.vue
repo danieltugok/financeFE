@@ -23,7 +23,7 @@
 
             <div v-if="subCategory.ReferenceCategoryBalance.length > 0" class="q-pa-lg">
               <q-chip v-for="referenceCategory in subCategory.ReferenceCategoryBalance" :key="referenceCategory.id"
-                removable v-model="referenceCategory.isActive"
+                removable @remove="removeCategory(referenceCategory.id)" v-model="referenceCategory.isActive"
                 :color="referenceCategory.name != '' ? 'teal' : 'tw-slate-500'" text-color="white"
                 icon="mdi-chevron-right">
                 <!-- :label="referenceCategory.name" -->
@@ -31,7 +31,8 @@
                 <!-- <q-tooltip>{{ referenceCategory.name }}</q-tooltip> -->
 
                 <q-input dense dark borderless v-model="referenceCategory.name" ref="itemRefs"
-                  class="tw-min-w-3 tw-uppercase">
+                  @update:model-value="newValue => updateCategory(referenceCategory, newValue)"
+                  class="tw-min-w-3 tw-uppercase" debounce="600">
                   <!-- <template v-slot:append>
                     <q-icon v-if="referenceCategory.name === ''" name="search" />
                     <q-icon v-else name="clear" class="cursor-pointer" @click="referenceCategory.name = ''" />
@@ -62,7 +63,7 @@
 
 <script setup lang="ts">
 import { useTransactionComposable } from 'src/composables/transactionComposable';
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import AddCategory from 'src/components/transaction/AddCategory.vue'
 const { getCategoryTransactionService } = useTransactionComposable();
 
@@ -86,6 +87,21 @@ const addSubCategory = (list: any) => {
   // let test = itemRefs.value.findIndex(el => el.nativeEl._value === lastItemName);
   // itemRefs.value.at(test + 1).focus()
 }
+
+const updateCategory = (referenceCategory: any, name: any) => {
+  console.log('🚀 ~ updateCategory ~ name:', name)
+  if (!referenceCategory.id) referenceCategory.id = 'XXX';
+  console.log('🚀 ~ updateCategory ~ id:', referenceCategory.id)
+  // const index = categoryTransaction.value.findIndex(el => el.id === id);
+  // categoryTransaction.value[index].name = name;
+}
+
+const removeCategory = (id: string) => {
+  console.log('🚀 ~ updateCategory ~ id:', id)
+}
+
+
+
 
 categoryTransactionService();
 

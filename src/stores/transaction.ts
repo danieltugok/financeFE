@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import type { QueryParameters } from 'src/utils/helpers';
+import type BalanceType from 'src/types/balanceType';
 
 export const useTransactionStore = defineStore('transaction', () => {
   const transactions = ref<any[]>([]);
@@ -14,6 +15,7 @@ export const useTransactionStore = defineStore('transaction', () => {
   });
   const filterTransaction = ref<any>({});
   const filterDrawerTransaction = ref<boolean>(false);
+  const totalBalance = ref<BalanceType | null>(null);
 
   function setTransactions(data: any[]): void {
     transactions.value = data;
@@ -36,12 +38,17 @@ export const useTransactionStore = defineStore('transaction', () => {
     filterDrawerTransaction.value = data;
   }
 
+  function setTotalBalance(data: BalanceType): void {
+    totalBalance.value = data;
+  }
+
   return {
     transactions,
     transaction,
     countTransactions,
     queryTransaction,
     filterTransaction,
+    totalBalance,
     filterDrawerTransaction,
     setTransactions,
     setTransaction,
@@ -49,5 +56,6 @@ export const useTransactionStore = defineStore('transaction', () => {
     setQueryTransaction,
     setFilterTransaction,
     setFilterDrawerTransaction,
+    setTotalBalance,
   };
 });
