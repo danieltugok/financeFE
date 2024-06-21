@@ -18,7 +18,7 @@ onMounted(() => {
 
 const router = useRouter();
 
-// Checking if the user has the preference of color scheme (dark or light) in the system 
+// Checking if the user has the preference of color scheme (dark or light) in the system
 const checkThemeinSystem = () => {
   const userTheme = user.value?.preference.theme;
 
@@ -52,7 +52,8 @@ const toggle = async () => {
   }
 }
 const getProfileImage = computed<string>(() => {
-  return user.value?.imageProfile ? `${import.meta.env.VITE_API_URL}users/profile-image/${user.value?.imageProfile}` : 'https://cdn.quasar.dev/img/avatar.png';
+  // return user.value?.imageProfile ? `${import.meta.env.VITE_API_URL}users/profile-image/${user.value?.imageProfile}` : 'https://cdn.quasar.dev/img/avatar.png';
+  return user.value?.imageProfile ? user.value?.imageProfile : 'https://cdn.quasar.dev/img/avatar.png';
 });
 
 const updateProfile = (val: any) => {

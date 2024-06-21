@@ -176,10 +176,7 @@ const upsertCategory = async (subCategory: any, referenceCategory: any, name: an
   }
   else notify('negative', response.response.data.error, response.response.data.message);
   nextTick(() => {
-    console.log("🚀 ~ upsertCategory ~ subCategory:", subCategory)
-    console.log("🚀 ~ nextTick ~ referenceCategory:", referenceCategory)
     let index = subCategory.ReferenceCategoryBalance.length - 1;
-    console.log("🚀 ~ nextTick ~ index:", index)
     let input = itemRefs.value[index];
     if (input) {
       input.focus();

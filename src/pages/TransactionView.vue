@@ -19,6 +19,7 @@
         <q-btn :text-color="$q.dark.isActive ? 'white' : 'dark'" :color="$q.dark.isActive ? 'primary' : 'white'"
           icon="mdi-tab-plus" class="borderless q-card--bordered" @click="detailDialog = !detailDialog" dense unelevated
           padding="sm">
+          <q-tooltip>Add new transaction</q-tooltip>
         </q-btn>
         <q-input v-model="search" type="search" label="Buscar..." dense outlined
           :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" debounce="300" clear-icon="sym_r_close" clearable>
