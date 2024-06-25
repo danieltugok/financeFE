@@ -16,6 +16,12 @@
           <q-chip removable @remove="onRemoveFilter(item)" icon-remove="sym_r_close" :label="item" text-color="white"
             color="primary" />
         </template>
+        <q-btn :text-color="$q.dark.isActive ? 'dark' : 'white'" :color="$q.dark.isActive ? 'white' : 'primary'"
+          icon="mdi-refresh" class="borderless q-card--bordered"
+          :class="isRefreshingTransactionCategories ? 'image-spinner-animation' : ''"
+          @click="refreshTransactionCategories" dense unelevated padding="sm">
+          <q-tooltip>Research the non-categories transactions</q-tooltip>
+        </q-btn>
         <q-btn :text-color="$q.dark.isActive ? 'white' : 'dark'" :color="$q.dark.isActive ? 'primary' : 'white'"
           icon="mdi-tab-plus" class="borderless q-card--bordered" @click="detailDialog = !detailDialog" dense unelevated
           padding="sm">
@@ -63,11 +69,13 @@ import DetailTransaction from 'src/components/transaction/DetailTransaction.vue'
 import DetailFilter from 'src/components/transaction/DetailFilter.vue';
 import { useTransactionComposable } from 'src/composables/transactionComposable'
 import { useRoute } from 'vue-router'
+import { notify } from 'src/utils/helpers'
 
-const { getTotalBalance, getTransactions, queryTransaction, setQueryTransaction, filterTransaction, setFilterTransaction, setFilterDrawerTransaction, filterDrawerTransaction } = useTransactionComposable()
+const { refreshTransactionCategoriesService, getTotalBalance, getTransactions, queryTransaction, setQueryTransaction, filterTransaction, setFilterTransaction, setFilterDrawerTransaction, filterDrawerTransaction } = useTransactionComposable()
 const filterDialog = ref<boolean>(false)
 const detailDialog = ref<boolean>(false)
 const detailDialogFilter = ref<boolean>(false)
+const isRefreshingTransactionCategories = ref<boolean>(false)
 const search = ref<string>('')
 
 const route = useRoute()
@@ -82,6 +90,16 @@ watch(() => route.params.id, (newId, oldId) => {
 const transactionDetailUpdated = () => {
   getTransactions(queryTransaction.value)
   getTotalBalance();
+}
+
+const refreshTransactionCategories = async () => {
+  isRefreshingTransactionCategories.value = true
+  const { status } = await refreshTransactionCategoriesService()
+  if (status === 200) {
+    isRefreshingTransactionCategories.value = false
+    notify('positive', 'Transactions analized successfully', '');
+  }
+  else notify('negative', 'ERROR', 'Something went wrong');
 }
 
 function onRemoveFilter(item: string): void {
@@ -143,3 +161,32 @@ function onOpenDetail(): void {
 }
 
 </script>
+
+<style lang="scss">
+.image-spinner-animation {
+  i {
+    -webkit-animation: spin 2s linear infinite;
+    -moz-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+}
+
+@-moz-keyframes spin {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+</style>

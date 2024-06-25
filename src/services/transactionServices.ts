@@ -89,3 +89,8 @@ export const deleteSubCategoryService = async (
     `category-transaction/${transitionId}`
   );
 };
+
+export const refreshTransactionCategoriesService =
+  async (): Promise<AxiosResponse> => {
+    return await http.get<AxiosInstance>(`cashflows/transactions-no-category`);
+  };
