@@ -9,12 +9,30 @@
     </q-breadcrumbs>
     <q-toolbar class="q-px-none q-my-sm">
       <q-toolbar-title> Categoria de Transações </q-toolbar-title>
+      <div class="row q-gutter-md items-center">
+        <q-btn :text-color="$q.dark.isActive ? 'white' : 'dark'" :color="$q.dark.isActive ? 'primary' : 'white'"
+          :icon="allContrated ? 'mdi-arrow-collapse-vertical' : 'mdi-arrow-expand-vertical'"
+          class="borderless q-card--bordered"
+          @click="!allContrated ? closeAllCategoriesExpanded(true) : closeAllCategoriesExpanded(false)" dense unelevated
+          padding="sm">
+          <q-tooltip>{{ !allContrated ? 'Expandir todas as categorias' : 'Contrair todas as categorias' }}</q-tooltip>
+        </q-btn>
+        <q-input v-model="search" type="search" label="Buscar..." dense outlined
+          :bg-color="$q.dark.isActive ? 'grey-10' : 'white'" debounce="300" clear-icon="sym_r_close" clearable
+          @clear="noCategoriesHighlighted">
+          <template v-slot:prepend>
+            <q-icon name="sym_r_search" />
+          </template>
+        </q-input>
+      </div>
     </q-toolbar>
+
+
     <div class="q-pa-md">
       <q-list bordered class="rounded-borders">
         <q-expansion-item v-for="transaction in categoryTransaction" :key="transaction.id" expand-separator
           :icon="transaction.icon" :label="transaction.name" caption=""
-          header-class="bg-grey-3 text-weight-bold text-primary"
+          header-class="bg-grey-3 text-weight-bold text-primary" v-model="transaction.expanded"
           :default-opened="transaction.SubCategoryBalance ? true : false">
           <template v-slot:header>
             <q-item-section avatar>
@@ -59,7 +77,8 @@
                 :icon-remove="referenceCategory.canDelete ? 'mdi-close-circle-outline' : 'mdi-close-circle'"
                 @update:value="beforeRemove(referenceCategory, subCategory.ReferenceCategoryBalance)"
                 @remove="beforeRemove(referenceCategory, subCategory.ReferenceCategoryBalance)"
-                v-model="referenceCategory.isActive" :color="referenceCategory.name != '' ? 'teal' : 'tw-slate-500'"
+                v-model="referenceCategory.isActive"
+                :color="referenceCategory.name != '' ? referenceCategory.found ? 'primary' : 'teal' : 'tw-slate-500'"
                 @focusout="referenceCategory.canDelete = false" text-color="white" icon="mdi-chevron-right">
 
                 <q-input dense dark borderless v-model="referenceCategory.name"
@@ -113,10 +132,54 @@ const confirmDeleteCategory = ref<boolean>(false)
 const deleteCategory = ref<any>(null);
 const categoryTransaction = ref<any[]>([]);
 const itemRefs = ref([]);
+const search = ref<string>('')
+const allContrated = ref<boolean>(false)
+
 const categoryTransactionService = async () => {
   const result = await getCategoryTransactionService();
   categoryTransaction.value = result.data;
 }
+
+const closeAllCategoriesExpanded = (boolean) => {
+  allContrated.value = boolean;
+  categoryTransaction.value.forEach(element => {
+    element.expanded = boolean;
+    element.SubCategoryBalance.forEach(ele => {
+      ele.expanded = boolean;
+      // ele.ReferenceCategoryBalance.forEach(item => {
+      //   item.found = boolean;
+      // })
+    });
+  });
+}
+
+const noCategoriesHighlighted = () => {
+  categoryTransaction.value.forEach(element => {
+    element.SubCategoryBalance.forEach(ele => {
+      ele.ReferenceCategoryBalance.forEach(item => {
+        item.found = false;
+      })
+    });
+  })
+}
+
+watch(search, (value) => {
+  if (!value && value == '') noCategoriesHighlighted();
+  if (value && value !== '' && value.length >= 3) categoryTransaction.value.forEach(element => {
+    element.expanded = false;
+    element.SubCategoryBalance.forEach(ele => {
+      ele.expanded = false;
+      ele.ReferenceCategoryBalance.forEach(item => {
+        item.found = false;
+        if (item.name.toLowerCase().includes(value.toLowerCase())) {
+          item.found = true;
+          ele.expanded = true;
+          element.expanded = true;
+        }
+      })
+    });
+  });
+})
 
 const addSubCategory = (list: any) => {
   let lastItemName = null;

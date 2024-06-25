@@ -87,9 +87,9 @@ watch(search, (value) => {
 watch(() => route.params.id, (newId, oldId) => {
   onOpenDetail()
 }, { immediate: true })
-const transactionDetailUpdated = () => {
-  getTransactions(queryTransaction.value)
-  getTotalBalance();
+const transactionDetailUpdated = async () => {
+  await getTransactions(queryTransaction.value)
+  await getTotalBalance();
 }
 
 const refreshTransactionCategories = async () => {
@@ -98,6 +98,7 @@ const refreshTransactionCategories = async () => {
   if (status === 200) {
     isRefreshingTransactionCategories.value = false
     notify('positive', 'Transactions analized successfully', '');
+    transactionDetailUpdated()
   }
   else notify('negative', 'ERROR', 'Something went wrong');
 }
